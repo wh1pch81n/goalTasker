@@ -11,5 +11,5 @@
 @interface DHTableViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, atomic) NSArray *array_of_goals;
-
+@property int parentID;
 @end

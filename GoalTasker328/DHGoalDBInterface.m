@@ -87,13 +87,13 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
 
 - (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb {
     NSString *query = [NSString stringWithFormat:
-    @"INSERT INTO goals ( "
-    " pid, "
-    " description, "
-    " date_created, "
-    " date_modified, "
-    " accomplished "
-    " ) values (%@, '%@','%@','%@',%@);",
+                       @"INSERT INTO goals ( "
+                       " pid, "
+                       " description, "
+                       " date_created, "
+                       " date_modified, "
+                       " accomplished "
+                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@);",
                        obj[@"pid"],
                        obj[@"description"],
                        obj[@"date_created"],
@@ -104,7 +104,18 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
 
 - (void)get_everything:(void(^)(NSError *err, NSDictionary *obj))cb
 {
-    NSString *query = @"SELECT * FROM goals;";
+    NSString *query =
+    @"SELECT * FROM goals "
+    " ORDER BY date_created DESC; ";
+    [self makeQuery:query completed:cb];
+}
+
+- (void)get_everything_from_parent:(int)pid complete:(void (^)(NSError *, NSDictionary *))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"SELECT * FROM goals "
+                       " WHERE pid = %d "
+                       " ORDER BY date_created DESC ",
+                       pid];
     [self makeQuery:query completed:cb];
 }
 

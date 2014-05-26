@@ -13,51 +13,58 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 
 @interface DHTableViewController ()
 
-@property int parentID;
-
 @end
 
 @implementation DHTableViewController
+
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
+    [[self navigationItem] setTitle:[@(self.parentID) stringValue]];
+    
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kReuseIdentifierGoalCell];
     
-//    if (self.array_of_goals == nil) {
-//        [self setArray_of_goals:[self generateRandomArray]];
-//    }
+    UIBarButtonItem *r_button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewTask:)];
+    [self.navigationItem setRightBarButtonItem:r_button];
 
-    [[DHGoalDBInterface instance] get_everything:^(NSError *err, NSDictionary *obj) {
+    [self reloadArrayFromDatabase];
+}
+
+- (void)reloadArrayFromDatabase {
+    [[DHGoalDBInterface instance] get_everything_from_parent:self.parentID complete:^(NSError *err, NSDictionary *obj) {
         if (err) {
             NSLog(@"insert error here");
         } else {
             [self setArray_of_goals:obj[@"rows"]];
+            [self.tableView reloadData];
         }
     }];
     
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [[DHGoalDBInterface instance] insertSomething:@{@"pid":@(0),
-                                                   @"description":@"hello world",
-                                                   @"date_created":@"2014-3-14",
-                                                   @"date_modified":@"2014-3-15",
-                                                   @"accomplished":@(NO)}
+- (void)insertNewTask:(id)sender {
+    [[DHGoalDBInterface instance] insertSomething:@{@"pid":@(self.parentID),
+                                                    @"description":@"hello world",
+                                                    @"date_created":@"NOW",
+                                                    @"date_modified":@"NOW",
+                                                    @"accomplished":@(NO)}
                                          complete:
      ^(NSError *err, NSDictionary *obj) {
          if (err) {
              NSLog(@"insertion error");
          } else {
-             NSLog(@"%@", obj);
-             [[DHGoalDBInterface instance] get_everything:^(NSError *err, NSDictionary *obj) {
-                 NSLog(@"%@", obj);
-             }];
+             [self reloadArrayFromDatabase];
          }
      }];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -87,7 +94,19 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
                                                             forIndexPath:indexPath];
     NSDictionary *obj = self.array_of_goals[indexPath.row];
     
-    [cell.textLabel setText:obj[@"description"]];
+    //[cell.textLabel setText:obj[@"description"]];
+    [cell.textLabel setNumberOfLines:0];
+    [cell.textLabel setMinimumScaleFactor:0.3];
+    [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+    NSString *label = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@",
+                       obj[@"id"],
+                       obj[@"pid"],
+                       obj[@"description"],
+                       obj[@"date_created"],
+                       obj[@"date_modified"],
+                       obj[@"accomplished"]];
+    [cell.textLabel setText:label];
+    
     NSLog(@"%@", obj);
     
     return cell;
@@ -98,7 +117,8 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     DHTableViewController *newTBVC = [[DHTableViewController alloc] init];
-    [newTBVC setArray_of_goals:[self generateRandomArray]];
+    [newTBVC setParentID:[self.array_of_goals[indexPath.row][@"id"] integerValue]];
+    //[newTBVC setArray_of_goals:[self generateRandomArray]];
     
     [self.navigationController pushViewController:newTBVC animated:YES];
 }

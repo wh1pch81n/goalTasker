@@ -15,4 +15,6 @@
 - (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb;
 - (void)get_everything:(void(^)(NSError *err, NSDictionary *obj))cb;
 
+- (void)get_everything_from_parent:(int)pid complete:(void(^)(NSError *err, NSDictionary *obj))cb;
+
 @end
