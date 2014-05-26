@@ -1,5 +1,5 @@
 //
-//  DHViewController.h
+//  DHNavigationController.h
 //  GoalTasker328
 //
 //  Created by Derrick Ho on 5/25/14.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DHViewController : UIViewController
+@interface DHNavigationController : UINavigationController
 
 @end
