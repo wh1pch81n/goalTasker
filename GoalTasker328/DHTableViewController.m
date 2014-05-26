@@ -7,10 +7,13 @@
 //
 
 #import "DHTableViewController.h"
+#import "DHGoalDBInterface.h"
 
 static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 
 @interface DHTableViewController ()
+
+@property int parentID;
 
 @end
 
@@ -23,9 +26,38 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kReuseIdentifierGoalCell];
     
-    if (self.array_of_goals == nil) {
-        [self setArray_of_goals:[self generateRandomArray]];
-    }
+//    if (self.array_of_goals == nil) {
+//        [self setArray_of_goals:[self generateRandomArray]];
+//    }
+
+    [[DHGoalDBInterface instance] get_everything:^(NSError *err, NSDictionary *obj) {
+        if (err) {
+            NSLog(@"insert error here");
+        } else {
+            [self setArray_of_goals:obj[@"rows"]];
+        }
+    }];
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [[DHGoalDBInterface instance] insertSomething:@{@"pid":@(0),
+                                                   @"description":@"hello world",
+                                                   @"date_created":@"2014-3-14",
+                                                   @"date_modified":@"2014-3-15",
+                                                   @"accomplished":@(NO)}
+                                         complete:
+     ^(NSError *err, NSDictionary *obj) {
+         if (err) {
+             NSLog(@"insertion error");
+         } else {
+             NSLog(@"%@", obj);
+             [[DHGoalDBInterface instance] get_everything:^(NSError *err, NSDictionary *obj) {
+                 NSLog(@"%@", obj);
+             }];
+         }
+     }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -53,7 +85,10 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"myGoal"
                                                             forIndexPath:indexPath];
-    [cell.textLabel setText:self.array_of_goals[indexPath.row]];
+    NSDictionary *obj = self.array_of_goals[indexPath.row];
+    
+    [cell.textLabel setText:obj[@"description"]];
+    NSLog(@"%@", obj);
     
     return cell;
 }

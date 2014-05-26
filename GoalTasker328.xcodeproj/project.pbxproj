@@ -23,6 +23,9 @@
 		7F51B9971932E7300074EAAE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7F51B9951932E7300074EAAE /* InfoPlist.strings */; };
 		7F51B9991932E7300074EAAE /* GoalTasker328Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F51B9981932E7300074EAAE /* GoalTasker328Tests.m */; };
 		7F51B9A41932F2FC0074EAAE /* DHNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F51B9A31932F2FC0074EAAE /* DHNavigationController.m */; };
+		7F51B9A71932F4280074EAAE /* DHGoalDBObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F51B9A61932F4280074EAAE /* DHGoalDBObject.m */; };
+		7F51B9AA1932F43F0074EAAE /* DHGoalDBInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F51B9A91932F43F0074EAAE /* DHGoalDBInterface.m */; };
+		7F51B9AC1932F6980074EAAE /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F51B9AB1932F6980074EAAE /* libsqlite3.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +61,11 @@
 		7F51B9981932E7300074EAAE /* GoalTasker328Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoalTasker328Tests.m; sourceTree = "<group>"; };
 		7F51B9A21932F2FC0074EAAE /* DHNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHNavigationController.h; sourceTree = "<group>"; };
 		7F51B9A31932F2FC0074EAAE /* DHNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHNavigationController.m; sourceTree = "<group>"; };
+		7F51B9A51932F4280074EAAE /* DHGoalDBObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHGoalDBObject.h; sourceTree = "<group>"; };
+		7F51B9A61932F4280074EAAE /* DHGoalDBObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHGoalDBObject.m; sourceTree = "<group>"; };
+		7F51B9A81932F43F0074EAAE /* DHGoalDBInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHGoalDBInterface.h; sourceTree = "<group>"; };
+		7F51B9A91932F43F0074EAAE /* DHGoalDBInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHGoalDBInterface.m; sourceTree = "<group>"; };
+		7F51B9AB1932F6980074EAAE /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F51B9AC1932F6980074EAAE /* libsqlite3.dylib in Frameworks */,
 				7F51B96D1932E72F0074EAAE /* CoreGraphics.framework in Frameworks */,
 				7F51B96F1932E72F0074EAAE /* UIKit.framework in Frameworks */,
 				7F51B96B1932E72F0074EAAE /* Foundation.framework in Frameworks */,
@@ -106,6 +115,7 @@
 		7F51B9691932E72F0074EAAE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7F51B9AB1932F6980074EAAE /* libsqlite3.dylib */,
 				7F51B96A1932E72F0074EAAE /* Foundation.framework */,
 				7F51B96C1932E72F0074EAAE /* CoreGraphics.framework */,
 				7F51B96E1932E72F0074EAAE /* UIKit.framework */,
@@ -125,6 +135,10 @@
 				7F51B9831932E72F0074EAAE /* DHTableViewController.m */,
 				7F51B9A21932F2FC0074EAAE /* DHNavigationController.h */,
 				7F51B9A31932F2FC0074EAAE /* DHNavigationController.m */,
+				7F51B9A51932F4280074EAAE /* DHGoalDBObject.h */,
+				7F51B9A61932F4280074EAAE /* DHGoalDBObject.m */,
+				7F51B9A81932F43F0074EAAE /* DHGoalDBInterface.h */,
+				7F51B9A91932F43F0074EAAE /* DHGoalDBInterface.m */,
 				7F51B9851932E72F0074EAAE /* Images.xcassets */,
 				7F51B9711932E72F0074EAAE /* Supporting Files */,
 			);
@@ -262,6 +276,8 @@
 				7F51B97B1932E72F0074EAAE /* DHAppDelegate.m in Sources */,
 				7F51B9841932E72F0074EAAE /* DHTableViewController.m in Sources */,
 				7F51B9771932E72F0074EAAE /* main.m in Sources */,
+				7F51B9A71932F4280074EAAE /* DHGoalDBObject.m in Sources */,
+				7F51B9AA1932F43F0074EAAE /* DHGoalDBInterface.m in Sources */,
 				7F51B9A41932F2FC0074EAAE /* DHNavigationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
