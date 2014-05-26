@@ -8,6 +8,7 @@
 
 #import "DHTableViewController.h"
 #import "DHGoalDBInterface.h"
+#import "DHTableViewCell.h"
 
 static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 
@@ -26,7 +27,10 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
     
     [[self navigationItem] setTitle:[@(self.parentID) stringValue]];
     
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kReuseIdentifierGoalCell];
+    //[self.tableView registerClass:[DHTableViewCell class] forCellReuseIdentifier:kReuseIdentifierGoalCell];
+    NSBundle *dhNibBundle = nil;
+    UINib *dhCustomNib = [UINib nibWithNibName:@"DHTableViewCell" bundle:dhNibBundle];
+    [self.tableView registerNib:dhCustomNib forCellReuseIdentifier:kReuseIdentifierGoalCell];
     
     UIBarButtonItem *r_button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewTask:)];
     [self.navigationItem setRightBarButtonItem:r_button];
@@ -89,23 +93,36 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
 // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
 
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    //DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell
+     //                                                       forIndexPath:indexPath];
+    //return  cell.frame.size.height;
+    return 400;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"myGoal"
+    DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell
                                                             forIndexPath:indexPath];
     NSDictionary *obj = self.array_of_goals[indexPath.row];
     
     //[cell.textLabel setText:obj[@"description"]];
-    [cell.textLabel setNumberOfLines:0];
-    [cell.textLabel setMinimumScaleFactor:0.3];
-    [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
-    NSString *label = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@",
-                       obj[@"id"],
-                       obj[@"pid"],
-                       obj[@"description"],
-                       obj[@"date_created"],
-                       obj[@"date_modified"],
-                       obj[@"accomplished"]];
-    [cell.textLabel setText:label];
+//    [cell.textLabel setNumberOfLines:0];
+//    [cell.textLabel setMinimumScaleFactor:0.3];
+//    [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
+//    NSString *label = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@",
+//                       obj[@"id"],
+//                       obj[@"pid"],
+//                       obj[@"description"],
+//                       obj[@"date_created"],
+//                       obj[@"date_modified"],
+//                       obj[@"accomplished"]];
+//    [cell.textLabel setText:label];
+    [[cell myID] setText:obj[@"id"]];
+    [[cell description] setTitle:[obj objectForKey:@"description"] forState:UIControlStateNormal];
+    [[cell dateCreated] setText:obj[@"date_created"]];
+    [[cell dateModified] setText:obj[@"date_modified"]];
+    [[cell accomplished] setText:[obj[@"accomplished"] integerValue]? @"YES": @"NO"];
     
     NSLog(@"%@", obj);
     

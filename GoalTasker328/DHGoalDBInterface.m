@@ -65,7 +65,8 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
             "  description TEXT, "
             "  date_created TEXT, "
             "  date_modified TEXT, "
-            "  accomplished INTEGER "
+            "  accomplished INTEGER, "
+            "  image BLOB "
             " ); ";
             
             int code;
