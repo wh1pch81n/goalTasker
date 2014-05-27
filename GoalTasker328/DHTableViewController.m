@@ -16,12 +16,11 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
 @interface DHTableViewController ()
 
 @property (nonatomic, strong) DHTableViewCell *prototypeCell;
+@property (nonatomic, strong) DHEditTaskViewController *editTaskViewController;
 
 @end
 
 @implementation DHTableViewController
-
-
 
 - (void)viewDidLoad
 {
@@ -114,28 +113,7 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
    DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell forIndexPath:indexPath];
    [self configureCell:cell forIndexPath:indexPath isForOffscreenUse:NO];
-    //NSDictionary *obj = self.array_of_goals[indexPath.row];
-    
-    //[cell.textLabel setText:obj[@"description"]];
-//    [cell.textLabel setNumberOfLines:0];
-//    [cell.textLabel setMinimumScaleFactor:0.3];
-//    [cell.textLabel setLineBreakMode:NSLineBreakByWordWrapping];
-//    NSString *label = [NSString stringWithFormat:@"%@|%@|%@|%@|%@|%@",
-//                       obj[@"id"],
-//                       obj[@"pid"],
-//                       obj[@"description"],
-//                       obj[@"date_created"],
-//                       obj[@"date_modified"],
-//                       obj[@"accomplished"]];
-//    [cell.textLabel setText:label];
-//    [[cell myID] setText:obj[@"id"]];
-////    [[cell description] setTitle:[obj objectForKey:@"description"] forState:UIControlStateNormal];
-//    [[cell dateCreated] setText:obj[@"date_created"]];
-//    [[cell dateModified] setText:obj[@"date_modified"]];
-//    [[cell accomplished] setText:[obj[@"accomplished"] integerValue]? @"YES": @"NO"];
-    
-   // NSLog(@"%@", obj);
-    
+        
     return cell;
 }
 
@@ -156,11 +134,38 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
     }
     NSDictionary *obj = self.array_of_goals[indexPath.row];
    // [cell setImageStored:]; //TODO:Figure out how to add image
-    
+    [cell setDelegate:self];
     [[cell detailsOfTask] setText:obj[@"description"]];
     [[cell toggleAccomplishment] setHighlighted:[obj[@"accomplished"] boolValue]];
     [[cell dateCreated] setText:obj[@"date_created"]];
     [[cell dateModified] setText:obj[@"date_modified"]];
+}
+
+#pragma mark - DHTableViewCellDelegate
+
+- (void)tappedEditButton:(id)sender {
+    DHEditTaskViewController *view = [[DHEditTaskViewController alloc] initWithNibName:@"DHEditTaskView" bundle:nil];
+    [view setDelegate:self];
+    [self setEditTaskViewController:view];
+   // [view setBackgroundColor:[UIColor redColor]];
+    //[self.navigationController.view addSubview:view];
+    //[self.navigationController.view bringSubviewToFront:view];
+    //[view setHidden:NO];
+    [self presentViewController:view animated:YES completion:nil];
+}
+
+#pragma mark - DHEditTaskViewDelegate
+
+- (void)tappedDoneButton:(id)sender {
+    
+}
+
+- (void)tappedCloseButton:(id)sender {
+    
+}
+
+- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image {
+    
 }
 
 @end

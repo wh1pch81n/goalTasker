@@ -16,7 +16,7 @@
 
 @end
 
-@interface DHEditTaskView : UIView
+@interface DHEditTaskViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UIImageView *image;
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 

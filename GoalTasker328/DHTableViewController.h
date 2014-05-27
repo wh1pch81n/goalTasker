@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DHTableViewCell.h"
+#import "DHEditTaskViewController.h"
 
-@interface DHTableViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate>
+@interface DHTableViewController : UITableViewController <UITableViewDataSource, UITableViewDelegate, DHEditTaskViewDelegate, DHTableViewCellDelegate>
 
 @property (strong, atomic) NSArray *array_of_goals;
 @property int parentID;

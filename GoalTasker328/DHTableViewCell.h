@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol DHTableViewDelegate <NSObject>
+@protocol DHTableViewCellDelegate <NSObject>
 
 - (void)tappedEditButton:(id)sender;
 
@@ -25,7 +25,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *detailsOfTask;
 
 
-@property (weak) id<DHTableViewDelegate> delegate;
+@property (weak) id<DHTableViewCellDelegate> delegate;
 
 @end
 

@@ -6,18 +6,18 @@
 //  Copyright (c) 2014 Derrick Ho. All rights reserved.
 //
 
-#import "DHEditTaskView.h"
+#import "DHEditTaskViewController.h"
 
-@implementation DHEditTaskView
+@implementation DHEditTaskViewController
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-    }
-    return self;
-}
+//- (id)initWithFrame:(CGRect)frame
+//{
+//    self = [super initWithFrame:frame];
+//    if (self) {
+//        // Initialization code
+//    }
+//    return self;
+//}
 
 /*
 // Only override drawRect: if you perform custom drawing.

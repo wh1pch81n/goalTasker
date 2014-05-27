@@ -34,6 +34,7 @@
 //}
 
 - (IBAction)tappedEditButton:(id)sender {
+    NSLog(@"tapped edit button");
     if (self.delegate) {
         [self.delegate tappedEditButton:sender];
     }
