@@ -22,16 +22,16 @@
     // Configure the view for the selected state
 }
 
-- (IBAction)tappedDescriptionButton:(id)sender {
-    if (self.delegate) {
-        [self.delegate tappedDescription:sender];
-    }
-}
-- (IBAction)tappedAccomplished:(id)sender {
-    if (self.delegate) {
-        [self.delegate tappedAccomplished:sender];
-    }
-}
+//- (IBAction)tappedDescriptionButton:(id)sender {
+//    if (self.delegate) {
+//        [self.delegate tappedDescription:sender];
+//    }
+//}
+//- (IBAction)tappedAccomplished:(id)sender {
+//    if (self.delegate) {
+//        [self.delegate tappedAccomplished:sender];
+//    }
+//}
 
 
 @end

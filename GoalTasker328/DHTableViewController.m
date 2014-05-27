@@ -95,21 +95,25 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
     return self.array_of_goals.count;
 }
 
-// Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
-// Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
-
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return UITableViewAutomaticDimension;
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (!self.prototypeCell) {
+        self.prototypeCell = [self.tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell];
+    }
     [self configureCell:self.prototypeCell forIndexPath:indexPath isForOffscreenUse:YES];
     
     [self.prototypeCell layoutIfNeeded];
+    //CGSize size = self. prototypeCell.frame.size;
     CGSize size = [self.prototypeCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     return size.height +1; //plus 1 for the cell separator
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell forIndexPath:indexPath];
-    [self configureCell:cell forIndexPath:indexPath isForOffscreenUse:NO];
+   DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell forIndexPath:indexPath];
+   [self configureCell:cell forIndexPath:indexPath isForOffscreenUse:NO];
     //NSDictionary *obj = self.array_of_goals[indexPath.row];
     
     //[cell.textLabel setText:obj[@"description"]];
@@ -155,7 +159,7 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
     
     [[cell detailsOfTask] setText:obj[@"description"]];
     [[cell toggleAccomplishment] setHighlighted:[obj[@"accomplished"] boolValue]];
-    //[[cell dateCreated] setText:obj[@"date_created"]];
+    [[cell dateCreated] setText:obj[@"date_created"]];
     [[cell dateModified] setText:obj[@"date_modified"]];
 }
 
