@@ -16,11 +16,15 @@
 @end
 
 @interface DHTableViewCell : UITableViewCell
-@property (weak, nonatomic) IBOutlet UILabel *myID;
-@property (weak, nonatomic) IBOutlet UILabel *accomplished;
+
+@property (weak, nonatomic) IBOutlet UIImageView *image;
+@property (weak, nonatomic) IBOutlet UILabel *accomplished; //if accomplish is enabled, it should be visible, other wise it will be grey.
+@property (weak, nonatomic) IBOutlet UISwitch *toggleAccomplishment; //Tapping this should also toggle accomplishment
+
 @property (weak, nonatomic) IBOutlet UILabel *dateCreated;
 @property (weak, nonatomic) IBOutlet UILabel *dateModified;
-@property (weak, nonatomic) IBOutlet UIButton *description;
+@property (weak, nonatomic) IBOutlet UILabel *description;
+
 
 @property (weak) id<DHTableViewDelegate> delegate;
 
