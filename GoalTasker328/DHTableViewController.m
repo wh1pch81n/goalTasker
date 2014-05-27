@@ -11,8 +11,11 @@
 #import "DHTableViewCell.h"
 
 static NSString *const kReuseIdentifierGoalCell = @"myGoal";
+static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
 
 @interface DHTableViewController ()
+
+@property (nonatomic, strong) DHTableViewCell *prototypeCell;
 
 @end
 
@@ -24,18 +27,20 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    
+     [self reloadArrayFromDatabase];
     [[self navigationItem] setTitle:[@(self.parentID) stringValue]];
     
-    //[self.tableView registerClass:[DHTableViewCell class] forCellReuseIdentifier:kReuseIdentifierGoalCell];
-    NSBundle *dhNibBundle = nil;
-    UINib *dhCustomNib = [UINib nibWithNibName:@"DHTableViewCell" bundle:dhNibBundle];
-    [self.tableView registerNib:dhCustomNib forCellReuseIdentifier:kReuseIdentifierGoalCell];
+    [self registerCustomTableViewCell];
     
     UIBarButtonItem *r_button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewTask:)];
     [self.navigationItem setRightBarButtonItem:r_button];
 
-    [self reloadArrayFromDatabase];
+   
+}
+
+- (void)registerCustomTableViewCell {
+     UINib *dhCustomNib = [UINib nibWithNibName:kCustomNibNameGoalCell bundle:nil];
+    [self.tableView registerNib:dhCustomNib forCellReuseIdentifier:kReuseIdentifierGoalCell];
 }
 
 - (void)reloadArrayFromDatabase {
@@ -95,16 +100,17 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    //DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell
-     //                                                       forIndexPath:indexPath];
-    //return  cell.frame.size.height;
-    return 400;
+    [self configureCell:self.prototypeCell forIndexPath:indexPath isForOffscreenUse:YES];
+    
+    [self.prototypeCell layoutIfNeeded];
+    CGSize size = [self.prototypeCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    return size.height +1; //plus 1 for the cell separator
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell
-                                                            forIndexPath:indexPath];
-    NSDictionary *obj = self.array_of_goals[indexPath.row];
+    DHTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentifierGoalCell forIndexPath:indexPath];
+    [self configureCell:cell forIndexPath:indexPath isForOffscreenUse:NO];
+    //NSDictionary *obj = self.array_of_goals[indexPath.row];
     
     //[cell.textLabel setText:obj[@"description"]];
 //    [cell.textLabel setNumberOfLines:0];
@@ -118,13 +124,13 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 //                       obj[@"date_modified"],
 //                       obj[@"accomplished"]];
 //    [cell.textLabel setText:label];
-    [[cell myID] setText:obj[@"id"]];
-    [[cell description] setTitle:[obj objectForKey:@"description"] forState:UIControlStateNormal];
-    [[cell dateCreated] setText:obj[@"date_created"]];
-    [[cell dateModified] setText:obj[@"date_modified"]];
-    [[cell accomplished] setText:[obj[@"accomplished"] integerValue]? @"YES": @"NO"];
+//    [[cell myID] setText:obj[@"id"]];
+////    [[cell description] setTitle:[obj objectForKey:@"description"] forState:UIControlStateNormal];
+//    [[cell dateCreated] setText:obj[@"date_created"]];
+//    [[cell dateModified] setText:obj[@"date_modified"]];
+//    [[cell accomplished] setText:[obj[@"accomplished"] integerValue]? @"YES": @"NO"];
     
-    NSLog(@"%@", obj);
+   // NSLog(@"%@", obj);
     
     return cell;
 }
@@ -138,6 +144,19 @@ static NSString *const kReuseIdentifierGoalCell = @"myGoal";
     //[newTBVC setArray_of_goals:[self generateRandomArray]];
     
     [self.navigationController pushViewController:newTBVC animated:YES];
+}
+
+- (void)configureCell:(DHTableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath isForOffscreenUse:(BOOL)offscreenUse {
+    if (cell == nil) {
+        return;
+    }
+    NSDictionary *obj = self.array_of_goals[indexPath.row];
+   // [cell setImageStored:]; //TODO:Figure out how to add image
+    
+    [[cell detailsOfTask] setText:obj[@"description"]];
+    [[cell toggleAccomplishment] setHighlighted:[obj[@"accomplished"] boolValue]];
+    //[[cell dateCreated] setText:obj[@"date_created"]];
+    [[cell dateModified] setText:obj[@"date_modified"]];
 }
 
 @end

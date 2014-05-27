@@ -6,11 +6,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DHTableViewCell">
             <connections>
-                <outlet property="accomplished" destination="QCD-77-FeU" id="RBl-1n-Ij9"/>
                 <outlet property="dateCreated" destination="JoW-Ka-zwB" id="HUE-5K-v8V"/>
                 <outlet property="dateModified" destination="WHT-J7-Npf" id="IwV-uK-BnD"/>
-                <outlet property="description" destination="vQw-4a-4KV" id="qS5-ly-lES"/>
-                <outlet property="image" destination="vyb-iG-gKD" id="RHm-FO-K8e"/>
+                <outlet property="detailsOfTask" destination="vQw-4a-4KV" id="hnB-tl-7CG"/>
+                <outlet property="imageStored" destination="vyb-iG-gKD" id="eF1-aF-Tfs"/>
                 <outlet property="toggleAccomplishment" destination="En4-ue-ElC" id="RKm-EH-p3d"/>
             </connections>
         </placeholder>
