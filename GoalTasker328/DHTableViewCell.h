@@ -10,8 +10,7 @@
 
 @protocol DHTableViewDelegate <NSObject>
 
-- (void)tappedAccomplished:(id)sender;
-- (void)tappedDescription:(id)sender;
+- (void)tappedEditButton:(id)sender;
 
 @end
 

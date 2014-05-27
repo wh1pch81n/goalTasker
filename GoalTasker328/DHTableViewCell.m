@@ -33,5 +33,10 @@
 //    }
 //}
 
+- (IBAction)tappedEditButton:(id)sender {
+    if (self.delegate) {
+        [self.delegate tappedEditButton:sender];
+    }
+}
 
 @end

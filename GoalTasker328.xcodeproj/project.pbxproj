@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F4F925219342CD5006A2F08 /* DHEditTaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4F925119342CD5006A2F08 /* DHEditTaskView.m */; };
+		7F4F925419342CF1006A2F08 /* DHEditTask.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7F4F925319342CF1006A2F08 /* DHEditTask.xib */; };
 		7F51B96B1932E72F0074EAAE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F51B96A1932E72F0074EAAE /* Foundation.framework */; };
 		7F51B96D1932E72F0074EAAE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F51B96C1932E72F0074EAAE /* CoreGraphics.framework */; };
 		7F51B96F1932E72F0074EAAE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F51B96E1932E72F0074EAAE /* UIKit.framework */; };
@@ -42,6 +44,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7F4F925019342CD5006A2F08 /* DHEditTaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHEditTaskView.h; sourceTree = "<group>"; };
+		7F4F925119342CD5006A2F08 /* DHEditTaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHEditTaskView.m; sourceTree = "<group>"; };
+		7F4F925319342CF1006A2F08 /* DHEditTask.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DHEditTask.xib; sourceTree = "<group>"; };
 		7F51B9671932E72F0074EAAE /* GoalTasker328.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoalTasker328.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F51B96A1932E72F0074EAAE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		7F51B96C1932E72F0074EAAE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -142,6 +147,9 @@
 				7F51B9AD1933CEC10074EAAE /* DHTableViewCell.h */,
 				7F51B9AE1933CEC10074EAAE /* DHTableViewCell.m */,
 				7F51B9AF1933CEC10074EAAE /* DHTableViewCell.xib */,
+				7F4F925019342CD5006A2F08 /* DHEditTaskView.h */,
+				7F4F925119342CD5006A2F08 /* DHEditTaskView.m */,
+				7F4F925319342CF1006A2F08 /* DHEditTask.xib */,
 				7F51B9821932E72F0074EAAE /* DHTableViewController.h */,
 				7F51B9831932E72F0074EAAE /* DHTableViewController.m */,
 				7F51B9A21932F2FC0074EAAE /* DHNavigationController.h */,
@@ -270,6 +278,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F4F925419342CF1006A2F08 /* DHEditTask.xib in Resources */,
 				7F51B9811932E72F0074EAAE /* Main_iPad.storyboard in Resources */,
 				7F51B9B11933CEC10074EAAE /* DHTableViewCell.xib in Resources */,
 				7F51B9B41934080F0074EAAE /* fetch.php.jpeg in Resources */,
@@ -297,6 +306,7 @@
 				7F51B97B1932E72F0074EAAE /* DHAppDelegate.m in Sources */,
 				7F51B9B01933CEC10074EAAE /* DHTableViewCell.m in Sources */,
 				7F51B9841932E72F0074EAAE /* DHTableViewController.m in Sources */,
+				7F4F925219342CD5006A2F08 /* DHEditTaskView.m in Sources */,
 				7F51B9771932E72F0074EAAE /* main.m in Sources */,
 				7F51B9A71932F4280074EAAE /* DHGoalDBObject.m in Sources */,
 				7F51B9AA1932F43F0074EAAE /* DHGoalDBInterface.m in Sources */,
@@ -515,6 +525,7 @@
 				7F51B99E1932E7300074EAAE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		7F51B99F1932E7300074EAAE /* Build configuration list for PBXNativeTarget "GoalTasker328Tests" */ = {
 			isa = XCConfigurationList;
@@ -523,6 +534,7 @@
 				7F51B9A11932E7300074EAAE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
