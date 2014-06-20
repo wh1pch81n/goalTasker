@@ -48,6 +48,21 @@
               options:NSKeyValueObservingOptionNew context:nil];
 }
 
+- (void)dealloc {
+    
+    [self removeObserver:self
+           forKeyPath:NSStringFromSelector(@selector(description))];
+    [self removeObserver:self
+           forKeyPath:NSStringFromSelector(@selector(date_created))];
+    [self removeObserver:self
+           forKeyPath:NSStringFromSelector(@selector(date_modified))];
+    [self removeObserver:self
+           forKeyPath:NSStringFromSelector(@selector(accomplished))];
+    [self removeObserver:self
+           forKeyPath:NSStringFromSelector(@selector(imageAsText))];
+
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqualToString:NSStringFromSelector(@selector(description))]) {
         [[self detailsOfTask] setText:self.description];

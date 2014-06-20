@@ -13,10 +13,17 @@
 static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
 
+typedef enum : NSUInteger {
+    DHEditTaskModeNewTask, //state that implies a new task
+    DHEditTaskModeUpdateTask //state that implies updating a task
+} DHEditTaskMode;
+
 @interface DHTableViewController ()
 
 @property (nonatomic, strong) DHTableViewCell *prototypeCell;
 @property (nonatomic, strong) DHEditTaskViewController *editTaskViewController;
+
+@property (assign) DHEditTaskMode editTaskViewMode;
 
 @end
 
@@ -55,21 +62,20 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
 }
 
 - (void)insertNewTask:(id)sender {
-    
-    [[DHGoalDBInterface instance]
-     insertSomething:@{@"pid":@(self.parentID),
-                       @"description":@"hello world",
-                       @"date_created":@"NOW",
-                       @"date_modified":@"NOW",
-                       @"accomplished":@(NO),
-                       @"image":@""}
-     complete:^(NSError *err, NSDictionary *obj) {
-         if (err) {
-             NSLog(@"insertion error");
-         } else {
-             [self reloadArrayFromDatabase];
-         }
-     }];
+    [self presentEditViewControllerWithMode:DHEditTaskModeNewTask initializations:^(DHEditTaskViewController *editView) {
+        [editView setDescription:@""];
+    }];
+}
+
+- (void)presentEditViewControllerWithMode:(DHEditTaskMode)mode initializations:(void(^)(DHEditTaskViewController *editView))init{
+    self.editTaskViewMode = mode;
+    DHEditTaskViewController *view = [[DHEditTaskViewController alloc] initWithNibName:@"DHEditTaskView" bundle:nil];
+    [view setDelegate:self];
+    [self setEditTaskViewController:view];
+    [self presentViewController:view animated:YES completion:nil];
+    if (init) {
+        init(view);
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -135,12 +141,8 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
         return;
     }
     NSDictionary *obj = self.array_of_goals[indexPath.row];
-   // [cell setImageStored:]; //TODO:Figure out how to add image
+
     [cell setDelegate:self];
-//    [[cell detailsOfTask] setText:obj[@"description"]];
-//    [[cell toggleAccomplishment] setHighlighted:[obj[@"accomplished"] boolValue]];
-//    [[cell dateCreated] setText:obj[@"date_created"]];
-//    [[cell dateModified] setText:obj[@"date_modified"]];
 
     [cell setId:obj[@"id"]];
     [cell setPid:obj[@"pid"]];
@@ -154,32 +156,52 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
 #pragma mark - DHTableViewCellDelegate
 
 - (void)tappedEditButton:(id)sender {
-    DHEditTaskViewController *view = [[DHEditTaskViewController alloc] initWithNibName:@"DHEditTaskView" bundle:nil];
-    [view setDelegate:self];
-    [self setEditTaskViewController:view];
-    UIButton *button = (UIButton *)sender;
-    DHTableViewCell *cell = (DHTableViewCell *)button.superview.superview;
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    [[view textView] setText:cell.description];
-   // [view setBackgroundColor:[UIColor redColor]];
-    //[self.navigationController.view addSubview:view];
-    //[self.navigationController.view bringSubviewToFront:view];
-    //[view setHidden:NO];
-    [self presentViewController:view animated:YES completion:nil];
+    [self presentEditViewControllerWithMode:DHEditTaskModeUpdateTask initializations:^(DHEditTaskViewController *editView) {
+        UIButton *button = (UIButton *)sender;
+        DHTableViewCell *cell = (DHTableViewCell *)button.superview.superview;
+        [editView setDescription:cell.description];
+        [editView setId:cell.id];
+        [editView setImageAsString:cell.imageAsText];
+    }];
 }
 
 #pragma mark - DHEditTaskViewDelegate
 
-- (void)tappedDoneButton:(id)sender {
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text image:(UIImage *)image {
+    //Code that will save the stuff.
+    __weak typeof(self)wSelf = self;
+    if (self.editTaskViewMode == DHEditTaskModeNewTask) {
+        [[DHGoalDBInterface instance]
+         insertSomething:@{@"pid":@(self.parentID),
+                           @"description":text,
+                           @"date_created":@"NOW",
+                           @"date_modified":@"NOW",
+                           @"accomplished":@(NO),
+                           @"image":@""}//Derrickfix images
+         complete:^(NSError *err, NSDictionary *obj) {
+             __strong typeof(wSelf)sSelf = wSelf;
+             if (err) {
+                 NSLog(@"insertion error");
+             } else {
+                 [sSelf reloadArrayFromDatabase];
+             }
+         }];
+    } else if (self.editTaskViewMode == DHEditTaskModeUpdateTask) {
+       //TODO: need to create query function that will allow me to update: image, text, and date_modified
+    }
     
 }
 
-- (void)tappedCloseButton:(id)sender {
+//TODO: functiont aht will handle when the accomplishment switch is toggleed
+
+//TODO: handle the deletions
+
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView closeWithSender:(id)sender {
     
 }
 
-- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image {
-    
-}
+//- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image {
+//    
+//}
 
 @end

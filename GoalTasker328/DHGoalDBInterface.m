@@ -86,6 +86,29 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
     return success;
 }
 
+- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription imageAsText:(NSString *)imageAsText complete:(void (^)(NSError *, NSDictionary *))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"UPDATE goal SET "
+                       " description = '%@', "
+                       " image = '%@' "
+                       " WHERE id = %@ ", taskDescription, imageAsText, id];
+    [self makeQuery:query completed:cb];
+}
+
+- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription image:(UIImage *)image complete:(void (^)(NSError *, NSDictionary *))cb {
+    NSData *imgAsData = UIImagePNGRepresentation(image);
+    NSString *imgAsStr = [imgAsData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    [self updateTaskWithID:id taskDescription:taskDescription imageAsText:imgAsStr complete:cb];
+}
+
+- (void)updateTaskWithID:(NSNumber *)id isAccomplished:(NSNumber *)accomplished complete:(void (^)(NSError *, NSDictionary *))cb {
+    [self makeQuery:[NSString stringWithFormat:
+                     @"UPDATE goal SET "
+                     " accomplished = %@ ,"
+                     " where id = %@ ", accomplished, id]
+          completed:cb];
+}
+
 - (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb {
     NSString *query = [NSString stringWithFormat:
                        @"INSERT INTO goals ( "

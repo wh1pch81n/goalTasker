@@ -8,17 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+@class DHEditTaskViewController;
 @protocol DHEditTaskViewDelegate <NSObject>
 
-- (void)tappedDoneButton:(id)sender;
-- (void)tappedCloseButton:(id)sender;
-- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image;
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text image:(UIImage *)image;
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView closeWithSender:(id)sender;
+//- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image;
 
 @end
 
-@interface DHEditTaskViewController : UIViewController <UIImagePickerControllerDelegate>
-@property (weak, nonatomic) IBOutlet UIImageView *image;
-@property (weak, nonatomic) IBOutlet UITextView *textView;
+@interface DHEditTaskViewController : UIViewController <UIImagePickerControllerDelegate, UITextViewDelegate>
+
+@property (strong, nonatomic) NSNumber *id;
+@property (strong, nonatomic) NSString *imageAsString;
+@property (strong, nonatomic) NSString *description;
 
 @property (weak) id<DHEditTaskViewDelegate> delegate;
 
