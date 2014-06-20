@@ -65,8 +65,8 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
             "  description TEXT, "
             "  date_created TEXT, "
             "  date_modified TEXT, "
-            "  accomplished INTEGER "
-            //",  image BLOB "
+            "  accomplished INTEGER, "
+            "  image TEXT "
             " ); ";
             
             int code;
@@ -93,13 +93,15 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                        " description, "
                        " date_created, "
                        " date_modified, "
-                       " accomplished "
-                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@);",
+                       " accomplished, "
+                       " image "
+                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@, '%@');",
                        obj[@"pid"],
                        obj[@"description"],
                        obj[@"date_created"],
                        obj[@"date_modified"],
-                       obj[@"accomplished"]];
+                       obj[@"accomplished"],
+                       obj[@"image"]];
     [self makeQuery:query completed:cb];
 }
 
@@ -143,6 +145,9 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                 }
             }
             sqlite3_finalize(statement);
+        } else {
+            NSLog(@"Could not prepare");
+            if(cb) {cb([self generateError], nil);}
         }
         sqlite3_close(_goalDB);
     }

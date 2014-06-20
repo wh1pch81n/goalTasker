@@ -34,7 +34,7 @@
         [self.delegate tappedImageButton:sender imageView:self.image];
     }
 }
-- (IBAction)tappedDoneButton:(id)sender {
+- (IBAction)tappedDoneButton:(id)sender { //TODO: Send delegate the  new data via dictionary (
     NSLog(@"Just Tapped Done");
     if (self.delegate) {
         [self.delegate tappedDoneButton:sender];
@@ -46,5 +46,9 @@
         [self.delegate tappedCloseButton:sender];
     }
 }
+
+#pragma mark - UIImagePickerControllerDelegate
+
+
 
 @end

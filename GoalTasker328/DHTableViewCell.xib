@@ -142,7 +142,7 @@
             <connections>
                 <outlet property="dateCreated" destination="JoW-Ka-zwB" id="nYI-uE-FjU"/>
                 <outlet property="dateModified" destination="WHT-J7-Npf" id="ZVP-eA-6WO"/>
-                <outlet property="detailsOfTask" destination="vQw-4a-4KV" id="KTn-VA-Bx2"/>
+                <outlet property="detailsOfTask" destination="vQw-4a-4KV" id="bsb-bk-27U"/>
                 <outlet property="imageStored" destination="vyb-iG-gKD" id="uuc-Pd-8Im"/>
                 <outlet property="toggleAccomplishment" destination="En4-ue-ElC" id="0S6-ie-w2Q"/>
             </connections>

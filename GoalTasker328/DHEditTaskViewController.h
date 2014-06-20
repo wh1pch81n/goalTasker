@@ -16,7 +16,7 @@
 
 @end
 
-@interface DHEditTaskViewController : UIViewController
+@interface DHEditTaskViewController : UIViewController <UIImagePickerControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *image;
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 

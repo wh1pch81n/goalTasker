@@ -55,13 +55,15 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
 }
 
 - (void)insertNewTask:(id)sender {
-    [[DHGoalDBInterface instance] insertSomething:@{@"pid":@(self.parentID),
-                                                    @"description":@"hello world",
-                                                    @"date_created":@"NOW",
-                                                    @"date_modified":@"NOW",
-                                                    @"accomplished":@(NO)}
-                                         complete:
-     ^(NSError *err, NSDictionary *obj) {
+    
+    [[DHGoalDBInterface instance]
+     insertSomething:@{@"pid":@(self.parentID),
+                       @"description":@"hello world",
+                       @"date_created":@"NOW",
+                       @"date_modified":@"NOW",
+                       @"accomplished":@(NO),
+                       @"image":@""}
+     complete:^(NSError *err, NSDictionary *obj) {
          if (err) {
              NSLog(@"insertion error");
          } else {
@@ -135,10 +137,18 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
     NSDictionary *obj = self.array_of_goals[indexPath.row];
    // [cell setImageStored:]; //TODO:Figure out how to add image
     [cell setDelegate:self];
-    [[cell detailsOfTask] setText:obj[@"description"]];
-    [[cell toggleAccomplishment] setHighlighted:[obj[@"accomplished"] boolValue]];
-    [[cell dateCreated] setText:obj[@"date_created"]];
-    [[cell dateModified] setText:obj[@"date_modified"]];
+//    [[cell detailsOfTask] setText:obj[@"description"]];
+//    [[cell toggleAccomplishment] setHighlighted:[obj[@"accomplished"] boolValue]];
+//    [[cell dateCreated] setText:obj[@"date_created"]];
+//    [[cell dateModified] setText:obj[@"date_modified"]];
+
+    [cell setId:obj[@"id"]];
+    [cell setPid:obj[@"pid"]];
+    [cell setDescription:obj[@"description"]];
+    [cell setDate_created:obj[@"date_created"]];
+    [cell setDate_modified:obj[@"date_modified"]];
+    [cell setAccomplished:obj[@"accomplished"]];
+    [cell setImageAsText:obj[@"image"]];
 }
 
 #pragma mark - DHTableViewCellDelegate
@@ -147,6 +157,10 @@ static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
     DHEditTaskViewController *view = [[DHEditTaskViewController alloc] initWithNibName:@"DHEditTaskView" bundle:nil];
     [view setDelegate:self];
     [self setEditTaskViewController:view];
+    UIButton *button = (UIButton *)sender;
+    DHTableViewCell *cell = (DHTableViewCell *)button.superview.superview;
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    [[view textView] setText:cell.description];
    // [view setBackgroundColor:[UIColor redColor]];
     //[self.navigationController.view addSubview:view];
     //[self.navigationController.view bringSubviewToFront:view];
