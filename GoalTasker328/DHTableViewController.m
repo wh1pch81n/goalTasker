@@ -40,8 +40,11 @@ typedef enum : NSUInteger {
     
     UIBarButtonItem *r_button = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewTask:)];
     [self.navigationItem setRightBarButtonItem:r_button];
+}
 
-   
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self reloadArrayFromDatabase];
 }
 
 - (void)registerCustomTableViewCell {
@@ -76,11 +79,6 @@ typedef enum : NSUInteger {
     if (init) {
         init(view);
     }
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning

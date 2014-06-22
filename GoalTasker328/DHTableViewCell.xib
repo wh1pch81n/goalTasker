@@ -125,6 +125,7 @@
                     <constraint firstAttribute="trailing" secondItem="TfX-ap-P3h" secondAttribute="trailing" constant="8" id="GWt-P5-Z0w"/>
                     <constraint firstItem="TfX-ap-P3h" firstAttribute="leading" secondItem="JoW-Ka-zwB" secondAttribute="trailing" constant="8" id="KbF-cr-tk1"/>
                     <constraint firstItem="QCD-77-FeU" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="L8A-9u-dpv"/>
+                    <constraint firstItem="vQw-4a-4KV" firstAttribute="top" secondItem="vyb-iG-gKD" secondAttribute="bottom" constant="8" id="LNL-ai-k3g"/>
                     <constraint firstItem="vQw-4a-4KV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="Ljf-A9-vmI"/>
                     <constraint firstItem="WHT-J7-Npf" firstAttribute="top" secondItem="JoW-Ka-zwB" secondAttribute="bottom" constant="8" id="MF5-Ph-A7B"/>
                     <constraint firstItem="YYg-RM-KO6" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="NOe-rd-Vpa"/>
@@ -146,7 +147,7 @@
                 <outlet property="dateCreated" destination="JoW-Ka-zwB" id="nYI-uE-FjU"/>
                 <outlet property="dateModified" destination="WHT-J7-Npf" id="ZVP-eA-6WO"/>
                 <outlet property="detailsOfTask" destination="vQw-4a-4KV" id="bsb-bk-27U"/>
-                <outlet property="imageStored" destination="vyb-iG-gKD" id="uuc-Pd-8Im"/>
+                <outlet property="imageStored" destination="vyb-iG-gKD" id="oHd-1V-WhQ"/>
                 <outlet property="toggleAccomplishment" destination="En4-ue-ElC" id="0S6-ie-w2Q"/>
             </connections>
         </tableViewCell>

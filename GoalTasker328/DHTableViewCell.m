@@ -80,12 +80,13 @@
 }
 
 - (void)setNoteImage:(NSString *)imageAsText {
-    if (!self.imageAsText || [self.imageAsText isEqualToString:@""]) {
-        return;
-    }
     NSString *imgAsStr = self.imageAsText;
-    NSData *imgAsData = [[NSData alloc] initWithBase64EncodedString:imgAsStr                                                    options:NSDataBase64DecodingIgnoreUnknownCharacters];
-    UIImage *img = [UIImage imageWithData:imgAsData];
+    NSData *imgAsData;
+    UIImage *img;
+    if (imgAsStr) {
+        imgAsData = [[NSData alloc] initWithBase64EncodedString:imgAsStr                                                    options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        img = [UIImage imageWithData:imgAsData];
+    }
     [[self imageStored] setImage:img];
 }
 
