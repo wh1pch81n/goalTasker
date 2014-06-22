@@ -21,11 +21,14 @@
     [super viewDidLoad];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(imageAsString)) options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(description)) options:NSKeyValueObservingOptionNew context:nil];
+    
+    [self.textView becomeFirstResponder];
 }
 
 -(void)dealloc {
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(imageAsString))];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(description))];
+    [self.textView resignFirstResponder];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {

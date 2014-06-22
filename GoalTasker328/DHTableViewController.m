@@ -54,7 +54,7 @@ typedef enum : NSUInteger {
         if (err) {
             NSLog(@"insert error here");
         } else {
-            [self setArray_of_goals:obj[@"rows"]];
+            [self setArray_of_goals:obj[@"rows"]];//TODO: is there a more efficent way?  
             [self.tableView reloadData];
         }
     }];
@@ -155,14 +155,22 @@ typedef enum : NSUInteger {
 
 #pragma mark - DHTableViewCellDelegate
 
-- (void)tappedEditButton:(id)sender {
+- (void)tableViewCell:(DHTableViewCell *)tvCell editButtonPressed:(UIButton *)sender {
     [self presentEditViewControllerWithMode:DHEditTaskModeUpdateTask initializations:^(DHEditTaskViewController *editView) {
-        UIButton *button = (UIButton *)sender;
-        DHTableViewCell *cell = (DHTableViewCell *)button.superview.superview;
-        [editView setDescription:cell.description];
-        [editView setId:cell.id];
-        [editView setImageAsString:cell.imageAsText];
+        
+        [editView setDescription:tvCell.description];
+        [editView setId:tvCell.id];
+        [editView setImageAsString:tvCell.imageAsText];
     }];
+}
+
+- (void)tableViewCell:(DHTableViewCell *)tvCell accomplishedPressed:(UISwitch *)sender {
+    __weak typeof(self)wSelf = self;
+    [[DHGoalDBInterface instance]
+     updateTaskWithID:tvCell.id isAccomplished:@(sender.on) complete:^(NSError *err, NSDictionary *obj) {
+         __strong typeof(wSelf)sSelf = wSelf;
+         [sSelf reloadArrayFromDatabase];
+     }];
 }
 
 #pragma mark - DHEditTaskViewDelegate
@@ -187,9 +195,20 @@ typedef enum : NSUInteger {
              }
          }];
     } else if (self.editTaskViewMode == DHEditTaskModeUpdateTask) {
-       //TODO: need to create query function that will allow me to update: image, text, and date_modified
+        //TODO: need to create query function that will allow me to update: image, text, and date_modified
+        [[DHGoalDBInterface instance]
+         updateTaskWithID:editTaskView.id
+         taskDescription:text
+         image:image
+         complete:^(NSError *err, NSDictionary *obj) {
+             __strong typeof(wSelf)sSelf = wSelf;
+             if(err ) {
+                 NSLog(@"updating error");
+             } else {
+                 [sSelf reloadArrayFromDatabase];
+             }
+         }];
     }
-    
 }
 
 //TODO: functiont aht will handle when the accomplishment switch is toggleed

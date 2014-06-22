@@ -96,22 +96,39 @@
     // Configure the view for the selected state
 }
 
-//- (IBAction)tappedDescriptionButton:(id)sender {
-//    if (self.delegate) {
-//        [self.delegate tappedDescription:sender];
-//    }
-//}
-//- (IBAction)tappedAccomplished:(id)sender {
-//    if (self.delegate) {
-//        [self.delegate tappedAccomplished:sender];
-//    }
-//}
-
 - (IBAction)tappedEditButton:(id)sender {
     NSLog(@"tapped edit button");
     if (self.delegate) {
-        [self.delegate tappedEditButton:sender];
+        [self.delegate tableViewCell:self editButtonPressed:sender];
     }
+}
+
+- (IBAction)tappedAccomplishedSwitch:(id)sender {
+    NSLog(@"tapped Accomplished switch");
+    if (self.delegate) {
+        [self.delegate tableViewCell:self accomplishedPressed:sender];
+    }
+}
+
+
+- (void)setDate_created:(NSString *)date_created {
+    _date_created = [self dateUTCStringToSystemTimeZone:date_created];
+}
+
+- (void)setDate_modified:(NSString *)date_modified {
+    _date_modified = [self dateUTCStringToSystemTimeZone:date_modified];
+}
+
+- (NSString *)dateUTCStringToSystemTimeZone:(NSString *)utcStr {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init]; //create dateformattter
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]]; //set it to UTC
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"]; //give it a dateformat
+    NSDate *utcDate = [dateFormatter dateFromString:utcStr]; //give it a string that conforms to that format.
+    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd hh:mm:ss a"];
+    NSString *dateStrAdjForSystemTimeZone = [dateFormatter stringFromDate:utcDate];
+    
+    return dateStrAdjForSystemTimeZone;
 }
 
 @end

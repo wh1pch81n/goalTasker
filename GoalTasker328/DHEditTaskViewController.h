@@ -11,6 +11,7 @@
 @class DHEditTaskViewController;
 @protocol DHEditTaskViewDelegate <NSObject>
 
+@required
 - (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text image:(UIImage *)image;
 - (void)editTaskView:(DHEditTaskViewController *)editTaskView closeWithSender:(id)sender;
 //- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image;

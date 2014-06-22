@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+@class DHTableViewCell;
 @protocol DHTableViewCellDelegate <NSObject>
 
-- (void)tappedEditButton:(id)sender;
+@required
+- (void)tableViewCell:(DHTableViewCell *)tvCell editButtonPressed:(UIButton *)sender;
+- (void)tableViewCell:(DHTableViewCell *)tvCell accomplishedPressed:(UISwitch *)sender;
 
 @end
 

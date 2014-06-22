@@ -27,6 +27,9 @@
                         <constraints>
                             <constraint firstAttribute="height" constant="31" id="cTC-sx-YtI"/>
                         </constraints>
+                        <connections>
+                            <action selector="tappedAccomplishedSwitch:" destination="KGk-i7-Jjw" eventType="valueChanged" id="4Wa-Mz-n1t"/>
+                        </connections>
                     </switch>
                     <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Accomplished" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QCD-77-FeU">
                         <rect key="frame" x="116" y="8" width="139" height="31"/>
