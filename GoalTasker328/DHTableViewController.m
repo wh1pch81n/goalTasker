@@ -97,7 +97,16 @@ typedef enum : NSUInteger {
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.array_of_goals.count;
+    __block NSInteger count = 0;
+    [[DHGoalDBInterface instance] totalNumberOfRowsUnderParentId:self.parentID withCallBack:^(NSError *err, NSDictionary *obj) {
+        if (err) {
+            NSLog(@"Unable to get total");
+            return;
+        }
+        count = [[obj[@"rows"] lastObject][@"count(id)"] integerValue];
+    }];
+    
+    return count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -138,17 +147,24 @@ typedef enum : NSUInteger {
     if (cell == nil) {
         return;
     }
-    NSDictionary *obj = self.array_of_goals[indexPath.row];
-
+    
     [cell setDelegate:self];
-
-    [cell setId:obj[@"id"]];
-    [cell setPid:obj[@"pid"]];
-    [cell setDescription:obj[@"description"]];
-    [cell setDate_created:obj[@"date_created"]];
-    [cell setDate_modified:obj[@"date_modified"]];
-    [cell setAccomplished:obj[@"accomplished"]];
-    [cell setImageAsText:obj[@"image"]];
+    
+    [[DHGoalDBInterface instance] getRowUnderParent:self.parentID atRow:indexPath.row complete:^(NSError *err, NSDictionary *obj) {
+        if (err) {
+            NSLog(@"Could not get table information");
+            return;
+        }
+        NSDictionary *row = obj[@"rows"][0];
+        
+        [cell setId:row[@"id"]];
+        [cell setPid:row[@"pid"]];
+        [cell setDescription:row[@"description"]];
+        [cell setDate_created:row[@"date_created"]];
+        [cell setDate_modified:row[@"date_modified"]];
+        [cell setAccomplished:row[@"accomplished"]];
+        [cell setImageAsText:row[@"image"]];
+    }];
 }
 
 #pragma mark - DHTableViewCellDelegate

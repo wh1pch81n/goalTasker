@@ -161,6 +161,38 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
     [self makeQuery:query completed:cb];
 }
 
+- (void)getRowUnderParent:(NSUInteger)pid atRow:(NSUInteger)rowIndex complete:(void (^)(NSError *, NSDictionary *))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"SELECT id, "
+                       "        pid, "
+                       "        description, "
+                       "        date_created, "
+                       "        date_modified, "
+                       "        accomplished, "
+                       "        image "
+                       " FROM goals "
+                       " WHERE pid = %ld "
+                       " ORDER BY accomplished ASC, date_modified DESC "
+                       " LIMIT 1 OFFSET %ld ", pid, rowIndex];
+    [self makeQuery:query
+          completed:cb];
+}
+
+- (void)totalNumberOfRowsWithCallBack:(void (^)(NSError *, NSDictionary *))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"SELECT count(id) "
+                       " from goals "];
+    [self makeQuery:query completed:cb];
+}
+
+- (void)totalNumberOfRowsUnderParentId:(NSUInteger)pid withCallBack:(void (^)(NSError *, NSDictionary *))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"SELECT count(id) "
+                       " from goals "
+                       " WHERE pid = %ld ", pid];
+    [self makeQuery:query completed:cb];
+}
+
 - (void)makeQuery:(NSString *)query completed:(void(^)(NSError *err, NSDictionary *obj))cb
 {
     sqlite3_stmt *statement;
