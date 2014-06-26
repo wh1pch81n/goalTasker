@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @class DHEditTaskViewController;
+@class DHTableViewCell;
 @protocol DHEditTaskViewDelegate <NSObject>
 
 @required
@@ -23,6 +24,7 @@
 @property (strong, nonatomic) NSNumber *id;
 @property (strong, nonatomic) NSString *imageAsString;
 @property (strong, nonatomic) NSString *description;
+@property (weak, nonatomic) DHTableViewCell *cell;
 
 @property (weak) id<DHEditTaskViewDelegate> delegate;
 

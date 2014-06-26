@@ -33,7 +33,6 @@ typedef enum : NSUInteger {
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-     [self reloadArrayFromDatabase];
     [[self navigationItem] setTitle:[@(self.parentID) stringValue]];
     
     [self registerCustomTableViewCell];
@@ -44,24 +43,11 @@ typedef enum : NSUInteger {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self reloadArrayFromDatabase];
 }
 
 - (void)registerCustomTableViewCell {
      UINib *dhCustomNib = [UINib nibWithNibName:kCustomNibNameGoalCell bundle:nil];
     [self.tableView registerNib:dhCustomNib forCellReuseIdentifier:kReuseIdentifierGoalCell];
-}
-
-- (void)reloadArrayFromDatabase {
-    [[DHGoalDBInterface instance] get_everything_from_parent:self.parentID complete:^(NSError *err, NSDictionary *obj) {
-        if (err) {
-            NSLog(@"insert error here");
-        } else {
-            [self setArray_of_goals:obj[@"rows"]];//TODO: is there a more efficent way?  
-            [self.tableView reloadData];
-        }
-    }];
-    
 }
 
 - (void)insertNewTask:(id)sender {
@@ -137,9 +123,15 @@ typedef enum : NSUInteger {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     DHTableViewController *newTBVC = [[DHTableViewController alloc] init];
-    [newTBVC setParentID:[self.array_of_goals[indexPath.row][@"id"] integerValue]];
-    //[newTBVC setArray_of_goals:[self generateRandomArray]];
-    
+
+    [[DHGoalDBInterface instance] getRowUnderParent:self.parentID atRow:indexPath.row complete:^(NSError *err, NSDictionary *obj) {
+        if (err) {
+            NSLog(@"Unable to get row");
+            return;
+        }
+        NSDictionary *row = obj[@"rows"][0];
+        [newTBVC setParentID:[row[@"id"] integerValue]];
+    }];
     [self.navigationController pushViewController:newTBVC animated:YES];
 }
 
@@ -175,6 +167,7 @@ typedef enum : NSUInteger {
         [editView setDescription:tvCell.description];
         [editView setId:tvCell.id];
         [editView setImageAsString:tvCell.imageAsText];
+        [editView setCell:tvCell];
     }];
 }
 
@@ -183,14 +176,13 @@ typedef enum : NSUInteger {
     [[DHGoalDBInterface instance]
      updateTaskWithID:tvCell.id isAccomplished:@(sender.on) complete:^(NSError *err, NSDictionary *obj) {
          __strong typeof(wSelf)sSelf = wSelf;
-         [sSelf reloadArrayFromDatabase];
+         [sSelf.tableView reloadData];
      }];
 }
 
 #pragma mark - DHEditTaskViewDelegate
 
 - (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text image:(UIImage *)image {
-    //Code that will save the stuff.
     __weak typeof(self)wSelf = self;
     if (self.editTaskViewMode == DHEditTaskModeNewTask) {
         [[DHGoalDBInterface instance]
@@ -205,11 +197,10 @@ typedef enum : NSUInteger {
              if (err) {
                  NSLog(@"insertion error");
              } else {
-                 [sSelf reloadArrayFromDatabase];
+                 [sSelf.tableView reloadData];
              }
          }];
     } else if (self.editTaskViewMode == DHEditTaskModeUpdateTask) {
-        //TODO: need to create query function that will allow me to update: image, text, and date_modified
         [[DHGoalDBInterface instance]
          updateTaskWithID:editTaskView.id
          taskDescription:text
@@ -218,14 +209,15 @@ typedef enum : NSUInteger {
              __strong typeof(wSelf)sSelf = wSelf;
              if(err ) {
                  NSLog(@"updating error");
-             } else {
-                 [sSelf reloadArrayFromDatabase];
+                 return;
              }
+             [sSelf.tableView reloadData];
+             NSIndexPath *indexpath = [NSIndexPath indexPathForRow:0 inSection:0];
+             [sSelf.tableView selectRowAtIndexPath:indexpath animated:YES scrollPosition:UITableViewScrollPositionTop];
+             [sSelf.tableView deselectRowAtIndexPath:indexpath animated:YES];
          }];
     }
 }
-
-//TODO: functiont aht will handle when the accomplishment switch is toggleed
 
 //TODO: handle the deletions
 
@@ -236,5 +228,6 @@ typedef enum : NSUInteger {
 //- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image {
 //    
 //}
+
 
 @end

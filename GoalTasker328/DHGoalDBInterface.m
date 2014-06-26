@@ -178,6 +178,14 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
           completed:cb];
 }
 
+- (void)getRowWithId:(NSUInteger)id complete:(void (^)(NSError *, NSDictionary *))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"SELECT * "
+                       " FROM goals "
+                       " WHERE id = %ld ", id];
+    [self makeQuery:query completed:cb];
+}
+
 - (void)totalNumberOfRowsWithCallBack:(void (^)(NSError *, NSDictionary *))cb {
     NSString *query = [NSString stringWithFormat:
                        @"SELECT count(id) "

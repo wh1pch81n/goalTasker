@@ -38,6 +38,11 @@
 - (void)getRowUnderParent:(NSUInteger)pid atRow:(NSUInteger)rowIndex complete:(void (^)(NSError *err, NSDictionary *obj))cb;
 
 /**
+ returns the row associated with the given id
+ */
+- (void)getRowWithId:(NSUInteger)id complete:(void (^)(NSError *err, NSDictionary *obj)) cb;
+
+/**
  Will return the current total number of rows in the goals table
  */
 - (void)totalNumberOfRowsWithCallBack:(void (^)(NSError *err, NSDictionary *obj))cb;
