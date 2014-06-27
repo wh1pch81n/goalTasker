@@ -182,7 +182,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - DHEditTaskViewDelegate
 
-- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text image:(UIImage *)image {
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imageAsStr:(NSString *)imageAsStr {
     __weak typeof(self)wSelf = self;
     if (self.editTaskViewMode == DHEditTaskModeNewTask) {
         [[DHGoalDBInterface instance]
@@ -191,7 +191,8 @@ typedef enum : NSUInteger {
                            @"date_created":@"NOW",
                            @"date_modified":@"NOW",
                            @"accomplished":@(NO),
-                           @"image":@""}//Derrickfix images
+                           @"image":imageAsStr?:@""
+                           }
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if (err) {
@@ -204,7 +205,7 @@ typedef enum : NSUInteger {
         [[DHGoalDBInterface instance]
          updateTaskWithID:editTaskView.id
          taskDescription:text
-         image:image
+         imageAsText:imageAsStr
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if(err ) {

@@ -13,13 +13,13 @@
 @protocol DHEditTaskViewDelegate <NSObject>
 
 @required
-- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text image:(UIImage *)image;
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imageAsStr:(NSString *)imageAsStr;
 - (void)editTaskView:(DHEditTaskViewController *)editTaskView closeWithSender:(id)sender;
 //- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image;
 
 @end
 
-@interface DHEditTaskViewController : UIViewController <UIImagePickerControllerDelegate, UITextViewDelegate>
+@interface DHEditTaskViewController : UIViewController <UIImagePickerControllerDelegate, UITextViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) NSNumber *id;
 @property (strong, nonatomic) NSString *imageAsString;
