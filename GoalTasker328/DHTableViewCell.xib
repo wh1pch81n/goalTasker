@@ -13,7 +13,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="300"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" image="fetch.php.jpeg" translatesAutoresizingMaskIntoConstraints="NO" id="vyb-iG-gKD">
+                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="vyb-iG-gKD">
                         <rect key="frame" x="8" y="8" width="100" height="100"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <constraints>
@@ -152,7 +152,4 @@
             </connections>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="fetch.php.jpeg" width="300" height="284"/>
-    </resources>
 </document>

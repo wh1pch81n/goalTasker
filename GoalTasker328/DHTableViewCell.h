@@ -25,6 +25,7 @@
 @property (strong, nonatomic) NSString *date_created;
 @property (strong, nonatomic) NSString *date_modified;
 @property (strong, nonatomic) NSNumber *accomplished;
+@property (weak, nonatomic) IBOutlet UIImageView *imageStored;
 @property (strong, nonatomic) NSString *imageAsText;
 
 @property (weak) id<DHTableViewCellDelegate> delegate;

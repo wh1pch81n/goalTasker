@@ -12,6 +12,9 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *image;
 @property (weak, nonatomic) IBOutlet UITextView *textView;
+@property (weak, nonatomic) IBOutlet UIButton *buttonDone;
+
+@property (strong, nonatomic) NSString *libraryCacheImagePath;
 
 @end
 
@@ -38,15 +41,22 @@
         if (!self.imageAsString || [self.imageAsString isEqualToString:@""]) {
             return;
         }
-        [self.image setImage:[UIImage imageWithData:[[NSData alloc] initWithBase64EncodedString:self.imageAsString options:NSDataBase64DecodingIgnoreUnknownCharacters]]];
+        __weak typeof(self)wSelf = self;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            __strong typeof(wSelf)sSelf = wSelf;
+            UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfFile:self.imageAsString]];
+            __weak typeof(sSelf)wSelf = sSelf;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(wSelf)sSelf = wSelf;
+                sSelf.image.image = img;
+            });
+        });
     }
-    
 }
 
 - (IBAction)tappedImage:(id)sender {
     NSLog(@"Just Tapped Image");
     [self.textView resignFirstResponder];
-    //TODO:how will the timage stuff play out?
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         NSLog(@"This device has a camera.  Asking the user what they want to use.");
         UIActionSheet *photoSourceSheet = [[UIActionSheet alloc]
@@ -68,20 +78,14 @@
                            animated:YES completion:nil];
         
     }
-//    if (self.delegate) {
-//        [self.delegate tappedImageButton:sender imageView:self.image];
-//    }
+
 }
 
-- (IBAction)tappedDoneButton:(id)sender { //TODO: Send delegate the  new data via dictionary (
+- (IBAction)tappedDoneButton:(id)sender {
     NSLog(@"Just Tapped Done");
-    __weak typeof(self)wSelf = self;
     [self dismissViewControllerAnimated:YES completion:^{
-        __strong typeof(wSelf)sSelf = wSelf;
-        if (sSelf.delegate) {
-           // [sSelf.delegate editTaskView:sSelf doneWithDescription:self.textView.text image:self.image.image];
-            [sSelf setDescription:self.textView.text];
-            [sSelf.delegate editTaskView:sSelf doneWithDescription:self.description imageAsStr:self.imageAsString];
+        if (self.delegate) {
+            [self.delegate editTaskView:self doneWithDescription:self.textView.text imageAsStr:self.libraryCacheImagePath];
         }
     }];
 }
@@ -100,12 +104,37 @@
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-    UIImage *image = info[UIImagePickerControllerOriginalImage];
-    NSData *imageAsData = UIImagePNGRepresentation(image);
-    NSString *imageAsStr = [imageAsData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    [self.buttonDone setHidden:YES];
+    __weak typeof(self)wSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __strong typeof(wSelf)sSelf = wSelf;
+        __weak typeof(sSelf)wwSelf = sSelf;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(wwSelf)ssSelf = wwSelf;
+            ssSelf.image.image = info[UIImagePickerControllerOriginalImage];
+        });
+    });
     
-    self.imageAsString = imageAsStr;
     
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __strong typeof(wSelf)sSelf = wSelf;
+        
+        //construct the path to the file in our Documents director.
+        NSString *libraryCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory , NSUserDomainMask, YES) lastObject];
+        NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
+        NSString *imagePath = [libraryCacheDir stringByAppendingPathComponent:uniqueFileName];
+        
+        //get the image from the picker and write it to disk
+        UIImage *image = info[UIImagePickerControllerOriginalImage];
+        NSData *imageAsData = UIImagePNGRepresentation(image);
+        [imageAsData writeToFile:imagePath atomically:YES];
+        
+        //Save temporary path
+        sSelf.libraryCacheImagePath = imagePath;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sSelf.buttonDone setHidden:NO];
+        });
+    });
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 

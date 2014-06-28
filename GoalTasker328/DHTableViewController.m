@@ -106,7 +106,6 @@ typedef enum : NSUInteger {
     [self configureCell:self.prototypeCell forIndexPath:indexPath isForOffscreenUse:YES];
     
     [self.prototypeCell layoutIfNeeded];
-    //CGSize size = self. prototypeCell.frame.size;
     CGSize size = [self.prototypeCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     return size.height +1; //plus 1 for the cell separator
 }
@@ -142,11 +141,14 @@ typedef enum : NSUInteger {
     
     [cell setDelegate:self];
     
+    __weak typeof(self)wSelf = self;
     [[DHGoalDBInterface instance] getRowUnderParent:self.parentID atRow:indexPath.row complete:^(NSError *err, NSDictionary *obj) {
+        __strong typeof(wSelf)sSelf = wSelf;
         if (err) {
             NSLog(@"Could not get table information");
             return;
         }
+        
         NSDictionary *row = obj[@"rows"][0];
         
         [cell setId:row[@"id"]];
@@ -156,6 +158,26 @@ typedef enum : NSUInteger {
         [cell setDate_modified:row[@"date_modified"]];
         [cell setAccomplished:row[@"accomplished"]];
         [cell setImageAsText:row[@"image"]];
+        
+        if (offscreenUse) { // You can do stuff asynchronously here and dont have to load the image
+            
+        } else { //since it now part of the view you should set the properties on the main queue, but read the files of the image asyncronously and only when it is done would you load it ot the main queue
+           
+            __weak typeof(sSelf)wSelf = sSelf;
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                __strong typeof(wSelf)sSelf = wSelf;
+                UIImage *image = [UIImage imageWithContentsOfFile:row[@"image"]];
+                __weak typeof(sSelf)wSelf = sSelf;
+               dispatch_async(dispatch_get_main_queue(), ^{
+                   __strong typeof(wSelf)sSelf = wSelf;
+                   DHTableViewCell *cell = (id)[sSelf.tableView cellForRowAtIndexPath:indexPath];
+                   if (cell) {
+                       [cell.imageStored setImage:image];
+                   }
+               });
+            });
+        }
+       
     }];
 }
 
@@ -183,8 +205,23 @@ typedef enum : NSUInteger {
 #pragma mark - DHEditTaskViewDelegate
 
 - (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imageAsStr:(NSString *)imageAsStr {
+    //TODO: if the imageAsStr is null or blank, then
+    //TODO: if the imageAsStr leads to a valid path then first you should deleted the image currectly associated with the row that it is trying to replace.  Second you add the path to the image. to the sqlite database.
+    
+    if (imageAsStr) {
+        //move imageAsStr from volitile directory to persistent documents directory
+        NSString *oldPath = imageAsStr;
+        NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+        imageAsStr = [docDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+        NSError *err;
+        [[NSFileManager defaultManager] moveItemAtPath:oldPath toPath:imageAsStr error:&err];
+        if(err){
+            NSLog(@"Failed to move image to new location:%@", [err localizedDescription]);
+        }
+    }
+    
     __weak typeof(self)wSelf = self;
-    if (self.editTaskViewMode == DHEditTaskModeNewTask) {
+    if (self.editTaskViewMode == DHEditTaskModeNewTask) { //TODO: fix issue where image is not saving.  Its probably some issue with the path. or text
         [[DHGoalDBInterface instance]
          insertSomething:@{@"pid":@(self.parentID),
                            @"description":text,
@@ -202,10 +239,25 @@ typedef enum : NSUInteger {
              }
          }];
     } else if (self.editTaskViewMode == DHEditTaskModeUpdateTask) {
+        //find old image file path if any then move it to a volitile directory
+        [[DHGoalDBInterface instance]
+         getRowWithId:editTaskView.id.integerValue complete:^(NSError *err, NSDictionary *obj) {
+             if (err){NSLog(@"Could not load row object"); return;}
+             NSString *path = obj[@"rows"][0][@"image"];
+             if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+                 NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+                 NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
+                 NSString *newPath = [libCacheDir stringByAppendingPathComponent:uniqueFileName];
+                 NSError *err;
+                 [[NSFileManager defaultManager] moveItemAtPath:path toPath:newPath error:&err];
+                 if(err) {NSLog(@"Error: %@", [err localizedDescription]);}
+             }
+         }];
+        
         [[DHGoalDBInterface instance]
          updateTaskWithID:editTaskView.id
          taskDescription:text
-         imageAsText:imageAsStr
+         imageAsText:imageAsStr?:@""
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if(err ) {
@@ -220,7 +272,7 @@ typedef enum : NSUInteger {
     }
 }
 
-//TODO: handle the deletions
+//TODO: handle the deletions frm sqlite database.  Also remember to delete picture from disk
 
 - (void)editTaskView:(DHEditTaskViewController *)editTaskView closeWithSender:(id)sender {
     

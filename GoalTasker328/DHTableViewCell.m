@@ -12,10 +12,11 @@
 
 //@property (weak, nonatomic) IBOutlet UILabel *accomplished; //if accomplish is enabled, it should be visible, other wise it will be grey.
 @property (weak, nonatomic) IBOutlet UISwitch *toggleAccomplishment; //Tapping this should also toggle accomplishment
-@property (weak, nonatomic) IBOutlet UIImageView *imageStored;
+
 @property (weak, nonatomic) IBOutlet UILabel *detailsOfTask;
 @property (weak, nonatomic) IBOutlet UILabel *dateCreated;
 @property (weak, nonatomic) IBOutlet UILabel *dateModified;
+
 @end
 
 @implementation DHTableViewCell
@@ -43,9 +44,9 @@
     [self addObserver:self
            forKeyPath:NSStringFromSelector(@selector(accomplished))
               options:NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self
-           forKeyPath:NSStringFromSelector(@selector(imageAsText))
-              options:NSKeyValueObservingOptionNew context:nil];
+//    [self addObserver:self
+//           forKeyPath:NSStringFromSelector(@selector(imageAsText))
+//              options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)dealloc {
@@ -58,8 +59,8 @@
            forKeyPath:NSStringFromSelector(@selector(date_modified))];
     [self removeObserver:self
            forKeyPath:NSStringFromSelector(@selector(accomplished))];
-    [self removeObserver:self
-           forKeyPath:NSStringFromSelector(@selector(imageAsText))];
+//    [self removeObserver:self
+//           forKeyPath:NSStringFromSelector(@selector(imageAsText))];
 
 }
 
@@ -72,22 +73,32 @@
         [[self dateModified] setText:self.date_modified];
     } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(accomplished))]) {
         [[self toggleAccomplishment] setOn:[self.accomplished boolValue] animated:YES];
-    } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(imageAsText))]) {
+    } /*else if ([keyPath isEqualToString:NSStringFromSelector(@selector(imageAsText))]) {
         [self setNoteImage:self.imageAsText];
-    } else {
+    } */ else {
         NSLog(@"Unknown keypath triggered KVO method");
     }
 }
 
 - (void)setNoteImage:(NSString *)imageAsText {
     NSString *imgAsStr = self.imageAsText;
-    NSData *imgAsData;
-    UIImage *img;
+   
     if (imgAsStr) {
-        imgAsData = [[NSData alloc] initWithBase64EncodedString:imgAsStr                                                    options:NSDataBase64DecodingIgnoreUnknownCharacters];
-        img = [UIImage imageWithData:imgAsData];
+        __block NSData *imgAsData;
+        __block UIImage *img;
+        __weak typeof(self)wSelf = self;
+       // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            __strong typeof(wSelf)sSelf = wSelf;
+            
+            imgAsData = [NSData dataWithContentsOfFile:imgAsStr];
+            img = [UIImage imageWithData:imgAsData];
+            __weak typeof(sSelf)wwSelf = sSelf;
+         //   dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(wwSelf)ssSelf = wwSelf;
+                [[ssSelf imageStored] setImage:img];
+           // });
+        //});
     }
-    [[self imageStored] setImage:img];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
