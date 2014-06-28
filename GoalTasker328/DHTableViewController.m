@@ -105,7 +105,7 @@ typedef enum : NSUInteger {
     }
     [self configureCell:self.prototypeCell forIndexPath:indexPath isForOffscreenUse:YES];
     
-    [self.prototypeCell layoutIfNeeded];
+    //[self.prototypeCell layoutIfNeeded];
     CGSize size = [self.prototypeCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     return size.height +1; //plus 1 for the cell separator
 }
@@ -151,18 +151,18 @@ typedef enum : NSUInteger {
         
         NSDictionary *row = obj[@"rows"][0];
         
-        [cell setId:row[@"id"]];
-        [cell setPid:row[@"pid"]];
-        [cell setDescription:row[@"description"]];
-        [cell setDate_created:row[@"date_created"]];
-        [cell setDate_modified:row[@"date_modified"]];
-        [cell setAccomplished:row[@"accomplished"]];
-        [cell setImageAsText:row[@"image"]];
-        
         if (offscreenUse) { // You can do stuff asynchronously here and dont have to load the image
-            
+            [cell setDescription:row[@"description"]];
         } else { //since it now part of the view you should set the properties on the main queue, but read the files of the image asyncronously and only when it is done would you load it ot the main queue
-           
+            
+            [cell setId:row[@"id"]];
+            [cell setPid:row[@"pid"]];
+            [cell setDescription:row[@"description"]];
+            [cell setDate_created:row[@"date_created"] adjustForLocalTime:YES];
+            [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
+            [cell setAccomplished:row[@"accomplished"]];
+            [cell setImageAsText:row[@"image"]];
+            
             __weak typeof(sSelf)wSelf = sSelf;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 __strong typeof(wSelf)sSelf = wSelf;

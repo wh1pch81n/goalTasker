@@ -30,6 +30,9 @@
 
 @property (weak) id<DHTableViewCellDelegate> delegate;
 
+- (void)setDate_created:(NSString *)date_created adjustForLocalTime:(bool)isLocalTime;
+- (void)setDate_modified:(NSString *)date_modified adjustForLocalTime:(bool)isLocalTime;
+
 @end
 
 

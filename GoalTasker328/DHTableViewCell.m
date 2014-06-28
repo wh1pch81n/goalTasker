@@ -123,12 +123,32 @@
 }
 
 
-- (void)setDate_created:(NSString *)date_created {
-    _date_created = [self dateUTCStringToSystemTimeZone:date_created];
+- (void)setDate_created:(NSString *)date_created adjustForLocalTime:(bool)isLocalTime {
+    __weak typeof(self)wSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __strong typeof(wSelf)sSelf = wSelf;
+        NSString *date = [sSelf dateUTCStringToSystemTimeZone:date_created];
+        __weak typeof(sSelf)wSelf = sSelf;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(wSelf)sSelf = wSelf;
+            sSelf.date_created = date;
+        });
+    });
+    //_date_created = [self dateUTCStringToSystemTimeZone:date_created];
 }
 
-- (void)setDate_modified:(NSString *)date_modified {
-    _date_modified = [self dateUTCStringToSystemTimeZone:date_modified];
+- (void)setDate_modified:(NSString *)date_modified adjustForLocalTime:(bool)isLocalTime {
+    __weak typeof(self)wSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __strong typeof(wSelf)sSelf = wSelf;
+        NSString *date = [sSelf dateUTCStringToSystemTimeZone:date_modified];
+        __weak typeof(sSelf)wSelf = sSelf;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(wSelf)sSelf = wSelf;
+            sSelf.date_modified = date;
+        });
+    });
+    //_date_modified = [self dateUTCStringToSystemTimeZone:date_modified];
 }
 
 - (NSString *)dateUTCStringToSystemTimeZone:(NSString *)utcStr {
