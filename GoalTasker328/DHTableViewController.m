@@ -161,7 +161,7 @@ typedef enum : NSUInteger {
 //            [cell setDate_created:row[@"date_created"] adjustForLocalTime:YES];
 //            [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
             [cell setAccomplished:row[@"accomplished"]];
-//            [cell setImageAsText:row[@"image"]];
+            [cell setImageAsText:row[@"image"]];
 //            
 //            __weak typeof(sSelf)wSelf = sSelf;
 //            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

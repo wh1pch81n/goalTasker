@@ -23,15 +23,6 @@
 
 - (void)awakeFromNib
 {
-    // Initialization code
-//    self.id = @(0);
-//    self.pid = @(0);
-//    self.description = @"";
-//    self.date_created = @"";
-//    self.date_modified = @"";
-//    self.accomplished = @(0);
-//    self.imageAsText = @"";
-    
     [self addObserver:self
            forKeyPath:NSStringFromSelector(@selector(description))
               options:NSKeyValueObservingOptionNew context:nil];
