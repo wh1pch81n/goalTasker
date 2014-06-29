@@ -158,8 +158,8 @@ typedef enum : NSUInteger {
             [cell setId:row[@"id"]];
             [cell setPid:row[@"pid"]];
             [cell setDescription:row[@"description"]];
-//            [cell setDate_created:row[@"date_created"] adjustForLocalTime:YES];
-//            [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
+            [cell setDate_created:row[@"date_created"] adjustForLocalTime:YES];
+            [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
             [cell setAccomplished:row[@"accomplished"]];
             [cell setImageAsText:row[@"image"]];
 //            
