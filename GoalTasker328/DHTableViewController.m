@@ -188,11 +188,13 @@ typedef enum : NSUInteger {
 
 - (void)tableViewCell:(DHTableViewCell *)tvCell editButtonPressed:(UIButton *)sender {
     [self presentEditViewControllerWithMode:DHEditTaskModeUpdateTask initializations:^(DHEditTaskViewController *editView) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [editView setDescription:tvCell.description];
+            [editView setId:tvCell.id];
+            [editView setImageAsString:tvCell.imageAsText];
+            [editView setCell:tvCell];
+        });
         
-        [editView setDescription:tvCell.description];
-        [editView setId:tvCell.id];
-        [editView setImageAsString:tvCell.imageAsText];
-        [editView setCell:tvCell];
     }];
 }
 

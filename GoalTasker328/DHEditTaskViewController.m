@@ -106,6 +106,30 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     [self.buttonDone setHidden:YES];
     __weak typeof(self)wSelf = self;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        __strong typeof(wSelf)sSelf = wSelf;
+        
+        //construct the path to the file in our Documents director.
+        NSString *libraryCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory , NSUserDomainMask, YES) lastObject];
+        NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
+        NSString *imagePath = [libraryCacheDir stringByAppendingPathComponent:uniqueFileName];
+        //Save temporary path
+        sSelf.libraryCacheImagePath = imagePath;
+        
+        //get the image from the picker and write it to disk
+        UIImage *image = info[UIImagePickerControllerOriginalImage];
+        NSData *imageAsData = UIImagePNGRepresentation(image);
+        [imageAsData writeToFile:imagePath atomically:YES];
+        
+        __weak typeof(sSelf)wSelf = sSelf;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(wSelf)sSelf = wSelf;
+            [sSelf.buttonDone setHidden:NO];
+            //TODO: Consider presenting a "loading" view on top rather than just hiding the button.  then finally dismiss this.
+        });
+    });
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         __strong typeof(wSelf)sSelf = wSelf;
         __weak typeof(sSelf)wwSelf = sSelf;
@@ -114,27 +138,8 @@
             ssSelf.image.image = info[UIImagePickerControllerOriginalImage];
         });
     });
+
     
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        __strong typeof(wSelf)sSelf = wSelf;
-        
-        //construct the path to the file in our Documents director.
-        NSString *libraryCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory , NSUserDomainMask, YES) lastObject];
-        NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
-        NSString *imagePath = [libraryCacheDir stringByAppendingPathComponent:uniqueFileName];
-        
-        //get the image from the picker and write it to disk
-        UIImage *image = info[UIImagePickerControllerOriginalImage];
-        NSData *imageAsData = UIImagePNGRepresentation(image);
-        [imageAsData writeToFile:imagePath atomically:YES];
-        
-        //Save temporary path
-        sSelf.libraryCacheImagePath = imagePath;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sSelf.buttonDone setHidden:NO];
-        });
-    });
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
