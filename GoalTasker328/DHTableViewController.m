@@ -158,24 +158,24 @@ typedef enum : NSUInteger {
             [cell setId:row[@"id"]];
             [cell setPid:row[@"pid"]];
             [cell setDescription:row[@"description"]];
-            [cell setDate_created:row[@"date_created"] adjustForLocalTime:YES];
-            [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
+//            [cell setDate_created:row[@"date_created"] adjustForLocalTime:YES];
+//            [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
             [cell setAccomplished:row[@"accomplished"]];
-            [cell setImageAsText:row[@"image"]];
-            
-            __weak typeof(sSelf)wSelf = sSelf;
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                __strong typeof(wSelf)sSelf = wSelf;
-                UIImage *image = [UIImage imageWithContentsOfFile:row[@"image"]];
-                __weak typeof(sSelf)wSelf = sSelf;
-               dispatch_async(dispatch_get_main_queue(), ^{
-                   __strong typeof(wSelf)sSelf = wSelf;
-                   DHTableViewCell *cell = (id)[sSelf.tableView cellForRowAtIndexPath:indexPath];
-                   if (cell) {
-                       [cell.imageStored setImage:image];
-                   }
-               });
-            });
+//            [cell setImageAsText:row[@"image"]];
+//            
+//            __weak typeof(sSelf)wSelf = sSelf;
+//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//                __strong typeof(wSelf)sSelf = wSelf;
+//                UIImage *image = [UIImage imageWithContentsOfFile:row[@"image"]];
+//                __weak typeof(sSelf)wSelf = sSelf;
+//               dispatch_async(dispatch_get_main_queue(), ^{
+//                   __strong typeof(wSelf)sSelf = wSelf;
+//                   DHTableViewCell *cell = (id)[sSelf.tableView cellForRowAtIndexPath:indexPath];
+//                   if (cell) {
+//                       [cell.imageStored setImage:image];
+//                   }
+//               });
+//            });
         }
        
     }];

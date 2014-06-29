@@ -72,7 +72,7 @@
     } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(date_modified))]) {
         [[self dateModified] setText:self.date_modified];
     } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(accomplished))]) {
-        [[self toggleAccomplishment] setOn:[self.accomplished boolValue] animated:YES];
+        [[self toggleAccomplishment] setOn:[self.accomplished boolValue] animated:NO];
     } /*else if ([keyPath isEqualToString:NSStringFromSelector(@selector(imageAsText))]) {
         [self setNoteImage:self.imageAsText];
     } */ else {
@@ -115,7 +115,7 @@
     }
 }
 
-- (IBAction)tappedAccomplishedSwitch:(id)sender {
+- (IBAction)tappedAccomplishedSwitch:(id)sender {//TODO: You should probably delay this so that the switch has time to move.  Make sure you disable user interaction. and prevent the switch, edit or selection to happen. Alternatively you just don't reload it immeadiately.  reload it after a slight delay.
     NSLog(@"tapped Accomplished switch");
     if (self.delegate) {
         [self.delegate tableViewCell:self accomplishedPressed:sender];
