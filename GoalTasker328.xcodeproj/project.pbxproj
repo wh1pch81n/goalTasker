@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F40DB66195FAAC000C28962 /* UIImage+DHScaledImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F40DB65195FAAC000C28962 /* UIImage+DHScaledImage.m */; };
 		7F4F925219342CD5006A2F08 /* DHEditTaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F4F925119342CD5006A2F08 /* DHEditTaskViewController.m */; };
 		7F4F925419342CF1006A2F08 /* DHEditTaskView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7F4F925319342CF1006A2F08 /* DHEditTaskView.xib */; };
 		7F51B96B1932E72F0074EAAE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F51B96A1932E72F0074EAAE /* Foundation.framework */; };
@@ -44,6 +45,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7F40DB64195FAAC000C28962 /* UIImage+DHScaledImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+DHScaledImage.h"; sourceTree = "<group>"; };
+		7F40DB65195FAAC000C28962 /* UIImage+DHScaledImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+DHScaledImage.m"; sourceTree = "<group>"; };
 		7F4F925019342CD5006A2F08 /* DHEditTaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHEditTaskViewController.h; sourceTree = "<group>"; };
 		7F4F925119342CD5006A2F08 /* DHEditTaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DHEditTaskViewController.m; sourceTree = "<group>"; };
 		7F4F925319342CF1006A2F08 /* DHEditTaskView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DHEditTaskView.xib; sourceTree = "<group>"; };
@@ -158,6 +161,8 @@
 				7F51B9A61932F4280074EAAE /* DHGoalDBObject.m */,
 				7F51B9A81932F43F0074EAAE /* DHGoalDBInterface.h */,
 				7F51B9A91932F43F0074EAAE /* DHGoalDBInterface.m */,
+				7F40DB64195FAAC000C28962 /* UIImage+DHScaledImage.h */,
+				7F40DB65195FAAC000C28962 /* UIImage+DHScaledImage.m */,
 				7F51B9851932E72F0074EAAE /* Images.xcassets */,
 				7F51B9711932E72F0074EAAE /* Supporting Files */,
 			);
@@ -305,6 +310,7 @@
 			files = (
 				7F51B97B1932E72F0074EAAE /* DHAppDelegate.m in Sources */,
 				7F51B9B01933CEC10074EAAE /* DHTableViewCell.m in Sources */,
+				7F40DB66195FAAC000C28962 /* UIImage+DHScaledImage.m in Sources */,
 				7F51B9841932E72F0074EAAE /* DHTableViewController.m in Sources */,
 				7F4F925219342CD5006A2F08 /* DHEditTaskViewController.m in Sources */,
 				7F51B9771932E72F0074EAAE /* main.m in Sources */,

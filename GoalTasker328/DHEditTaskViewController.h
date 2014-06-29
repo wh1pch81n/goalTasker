@@ -32,7 +32,7 @@
 
 @end
 
-@interface DHEditTaskViewController : UIViewController <UIImagePickerControllerDelegate, UITextViewDelegate, UIActionSheetDelegate>
+@interface DHEditTaskViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) NSNumber *id;
 @property (strong, nonatomic) NSString *imageAsString;

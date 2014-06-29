@@ -13,7 +13,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="287" height="300"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vyb-iG-gKD">
+                    <imageView contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vyb-iG-gKD">
                         <rect key="frame" x="5" y="5" width="100" height="100"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </imageView>
@@ -62,10 +62,11 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TfX-ap-P3h">
-                        <rect key="frame" x="107" y="44" width="79" height="31"/>
+                        <rect key="frame" x="107" y="35" width="79" height="43"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" red="0.85593131649999998" green="0.89473618980000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <state key="normal" title="edit">
+                        <fontDescription key="fontDescription" type="system" pointSize="34"/>
+                        <state key="normal" title="EDIT">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
                         <connections>
