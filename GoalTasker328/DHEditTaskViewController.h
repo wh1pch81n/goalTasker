@@ -18,9 +18,10 @@
  called when the user pressed the done button in the edit taskview.
  @param editTaskView a reference to the edit task view
  @param text the text that was entered into the description
- @param imageAsStr the path to a file containing the chosen image.  It is saved in the library cache which is for temporary storage that will be cleared automatically by the opperating system.  If you wish to save this on disk and on the icloud you should move this file to the documents directory.
+ @param imagePath the path to a file containing the chosen image.  Appending the path with "/thumbnail" will give you the path to the thumbnail version.  Both are saved in the library cache which is for temporary storage that will be cleared automatically by the opperating system.  If you wish to save this on disk and on the icloud you should move this file to the documents directory.
+ @param imageOrientation an integer that specifies the orientation.
  */
-- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imageAsStr:(NSString *)imageAsStr;
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imagePath:(NSString *)imagePath imageOrientation:(NSNumber *)imageOrientation;
 
 /**
  This is called when the cancel button is called.
@@ -35,7 +36,8 @@
 @interface DHEditTaskViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIActionSheetDelegate>
 
 @property (strong, nonatomic) NSNumber *id;
-@property (strong, nonatomic) NSString *imageAsString;
+@property (strong, nonatomic) NSString *imagePath;
+@property (strong, nonatomic) NSNumber *imageOrientation;
 @property (strong, nonatomic) NSString *description;
 @property (weak, nonatomic) DHTableViewCell *cell;
 

@@ -13,7 +13,7 @@
 
 static NSString *const kReuseIdentifierGoalCell = @"myGoal";
 static NSString *const kCustomNibNameGoalCell = @"DHTableViewCell";
-static const CGSize kCellUIImageSize = (CGSize){100,100};
+
 
 typedef enum : NSUInteger {
     DHEditTaskModeNewTask, //state that implies a new task
@@ -169,14 +169,16 @@ typedef enum : NSUInteger {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 __strong typeof(wSelf)sSelf = wSelf;
                 //TODO: change this to load the thumbnail version of the image.  Apparently the resizing of the image is causing the
-                UIImage *unscaled_image = [UIImage imageWithContentsOfFile:row[@"image"]];
-                UIImage *image = [unscaled_image imageScaledToFitInSize:kCellUIImageSize];
+                NSString *thumbPath = [row[@"image"] stringByAppendingPathExtension:@"thumbnail"];
+                UIImage *thumbnail = [UIImage imageWithContentsOfFile:thumbPath];
+                thumbnail = [UIImage imageWithCGImage:thumbnail.CGImage
+                                                scale:1.0 orientation:[row[@"image_orientation"] integerValue]];
                 __weak typeof(sSelf)wSelf = sSelf;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     __strong typeof(wSelf)sSelf = wSelf;
                     DHTableViewCell *cell = (id)[sSelf.tableView cellForRowAtIndexPath:indexPath];
                     if (cell) {
-                        [cell.imageStored setImage:image];
+                        [cell.imageStored setImage:thumbnail];
                     }
                 });
             });
@@ -191,7 +193,7 @@ typedef enum : NSUInteger {
         dispatch_async(dispatch_get_main_queue(), ^{
             [editView setDescription:tvCell.description];
             [editView setId:tvCell.id];
-            [editView setImageAsString:tvCell.imageAsText];
+            [editView setImagePath:tvCell.imageAsText];
             [editView setCell:tvCell];
         });
         
@@ -209,19 +211,24 @@ typedef enum : NSUInteger {
 
 #pragma mark - DHEditTaskViewDelegate
 
-- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imageAsStr:(NSString *)imageAsStr {
-    //TODO: if the imageAsStr is null or blank, then
-    //TODO: if the imageAsStr leads to a valid path then first you should deleted the image currectly associated with the row that it is trying to replace.  Second you add the path to the image. to the sqlite database.
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imagePath:(NSString *)imagePath imageOrientation:(NSNumber *)imageOrientation {
     
-    if (imageAsStr) {
+    if (imagePath) {
         //move imageAsStr from volitile directory to persistent documents directory
-        NSString *oldPath = imageAsStr;
+        NSString *oldPath = imagePath;
         NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-        imageAsStr = [docDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+        imagePath = [docDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+        
         NSError *err;
-        [[NSFileManager defaultManager] moveItemAtPath:oldPath toPath:imageAsStr error:&err];
+        [[NSFileManager defaultManager] moveItemAtPath:oldPath toPath:imagePath error:&err];
         if(err){
             NSLog(@"Failed to move image to new location:%@", [err localizedDescription]);
+        }
+        [[NSFileManager defaultManager] moveItemAtPath:[oldPath stringByAppendingPathExtension:@"thumbnail"]
+                                                toPath:[imagePath stringByAppendingPathExtension:@"thumbnail"]
+                                                 error:&err];
+        if(err){
+            NSLog(@"Failed to move thumbnail to new location:%@", [err localizedDescription]);
         }
     }
     
@@ -233,7 +240,8 @@ typedef enum : NSUInteger {
                            @"date_created":@"NOW",
                            @"date_modified":@"NOW",
                            @"accomplished":@(NO),
-                           @"image":imageAsStr?:@""
+                           @"image":imagePath?:@"",
+                           @"image_orientation":imageOrientation?:@(0)
                            }
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
@@ -250,6 +258,7 @@ typedef enum : NSUInteger {
              if (err){NSLog(@"Could not load row object"); return;}
              NSString *path = obj[@"rows"][0][@"image"];
              if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+                 //move old image files to volitile space.
                  NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
                  NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
                  NSString *newPath = [libCacheDir stringByAppendingPathComponent:uniqueFileName];
@@ -257,12 +266,23 @@ typedef enum : NSUInteger {
                  [[NSFileManager defaultManager] moveItemAtPath:path toPath:newPath error:&err];
                  if(err) {NSLog(@"Error: %@", [err localizedDescription]);}
              }
+             NSString *pathThumb = [path stringByAppendingPathExtension:@"thumbnail"];
+             if ([[NSFileManager defaultManager] fileExistsAtPath:pathThumb]) {
+                 //move old image thumb files to volitile space.
+                 NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+                 NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
+                 NSString *newPath = [libCacheDir stringByAppendingPathComponent:uniqueFileName];
+                 NSError *err;
+                 [[NSFileManager defaultManager] moveItemAtPath:pathThumb toPath:newPath error:&err];
+                 if(err) {NSLog(@"Error: %@", [err localizedDescription]);}
+             }
          }];
         
         [[DHGoalDBInterface instance]
          updateTaskWithID:editTaskView.id
          taskDescription:text
-         imageAsText:imageAsStr?:@""
+         imageAsText:imagePath?:@""
+         imageOrientation:imageOrientation
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if(err ) {
@@ -270,6 +290,8 @@ typedef enum : NSUInteger {
                  return;
              }
              [sSelf.tableView reloadData];
+             
+             //since the modified one will become the top one, just scroll all the way to the top
              NSIndexPath *indexpath = [NSIndexPath indexPathForRow:0 inSection:0];
              [sSelf.tableView selectRowAtIndexPath:indexpath animated:YES scrollPosition:UITableViewScrollPositionTop];
              [sSelf.tableView deselectRowAtIndexPath:indexpath animated:YES];

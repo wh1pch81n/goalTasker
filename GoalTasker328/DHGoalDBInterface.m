@@ -66,7 +66,8 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
             "  date_created TEXT, "
             "  date_modified TEXT, "
             "  accomplished INTEGER, "
-            "  image TEXT "
+            "  image TEXT, "
+            "  image_orientation INTEGER "
             " ); ";
             
             int code;
@@ -86,21 +87,22 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
     return success;
 }
 
-- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription imageAsText:(NSString *)imageAsText complete:(void (^)(NSError *err, NSDictionary *obj))cb {
+- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription imageAsText:(NSString *)imageAsText imageOrientation:(NSNumber *)imageOrientation complete:(void (^)(NSError *err, NSDictionary *obj))cb {
     NSString *query = [NSString stringWithFormat:
                        @"UPDATE goals SET "
                        " date_modified = DATETIME('NOW'), "
                        " description = '%@', "
-                       " image = '%@' "
-                       " WHERE id = %@ ", taskDescription, imageAsText, id];
+                       " image = '%@', "
+                       " image_orientation = %@, "
+                       " WHERE id = %@ ", taskDescription, imageAsText, imageOrientation, id];
     [self makeQuery:query completed:cb];
 }
 
-- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription image:(UIImage *)image complete:(void (^)(NSError *err, NSDictionary *obj))cb {
-    NSData *imgAsData = UIImagePNGRepresentation(image);
-    NSString *imgAsStr = [imgAsData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-    [self updateTaskWithID:id taskDescription:taskDescription imageAsText:imgAsStr complete:cb];
-}
+//- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription image:(UIImage *)image complete:(void (^)(NSError *err, NSDictionary *obj))cb {
+//    NSData *imgAsData = UIImagePNGRepresentation(image);
+//    NSString *imgAsStr = [imgAsData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+//    [self updateTaskWithID:id taskDescription:taskDescription imageAsText:imgAsStr complete:cb];
+//}
 
 - (void)updateTaskWithID:(NSNumber *)id isAccomplished:(NSNumber *)accomplished complete:(void (^)(NSError *err, NSDictionary *obj))cb {
     [self makeQuery:[NSString stringWithFormat:
@@ -119,47 +121,43 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                        " date_created, "
                        " date_modified, "
                        " accomplished, "
-                       " image "
-                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@, '%@');",
+                       " image, "
+                       " image_orientation "
+                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@, '%@', %@);",
                        obj[@"pid"],
                        obj[@"description"],
                        obj[@"date_created"],
                        obj[@"date_modified"],
                        obj[@"accomplished"],
-                       obj[@"image"]];
+                       obj[@"image"],
+                       obj[@"image_orientation"]];
     [self makeQuery:query completed:cb];
 }
 
-- (void)get_everything:(void(^)(NSError *err, NSDictionary *obj))cb
-{
-    NSString *query =
-    @"SELECT id, "
-    "       pid, "
-    "       description, "
-    "       date_created, "
-    "       date_modified, "
-    "       accomplished, "
-    "       image "
-    " FROM goals "
-    " ORDER BY date_created DESC; ";
-    [self makeQuery:query completed:cb];
-}
+//- (void)get_everything:(void(^)(NSError *err, NSDictionary *obj))cb
+//{
+//    NSString *query =
+//    @"SELECT * "
+//    " FROM goals "
+//    " ORDER BY date_created DESC; ";
+//    [self makeQuery:query completed:cb];
+//}
 
-- (void)get_everything_from_parent:(int)pid complete:(void (^)(NSError *, NSDictionary *))cb {
-    NSString *query = [NSString stringWithFormat:
-                       @"SELECT id, "
-                       "       pid, "
-                       "       description, "
-                       "       date_created, "
-                       "       date_modified, "
-                       "       accomplished, "
-                       "       image "
-                       " FROM goals "
-                       " WHERE pid = %d "
-                       " ORDER BY date_created DESC ",
-                       pid];
-    [self makeQuery:query completed:cb];
-}
+//- (void)get_everything_from_parent:(int)pid complete:(void (^)(NSError *, NSDictionary *))cb {
+//    NSString *query = [NSString stringWithFormat:
+//                       @"SELECT id, "
+//                       "       pid, "
+//                       "       description, "
+//                       "       date_created, "
+//                       "       date_modified, "
+//                       "       accomplished, "
+//                       "       image "
+//                       " FROM goals "
+//                       " WHERE pid = %d "
+//                       " ORDER BY date_created DESC ",
+//                       pid];
+//    [self makeQuery:query completed:cb];
+//}
 
 - (void)getRowUnderParent:(NSUInteger)pid atRow:(NSUInteger)rowIndex complete:(void (^)(NSError *, NSDictionary *))cb {
     NSString *query = [NSString stringWithFormat:

@@ -45,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7F0EC3B5196626C900309003 /* DHGlobalConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DHGlobalConstants.h; sourceTree = "<group>"; };
 		7F40DB64195FAAC000C28962 /* UIImage+DHScaledImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+DHScaledImage.h"; sourceTree = "<group>"; };
 		7F40DB65195FAAC000C28962 /* UIImage+DHScaledImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+DHScaledImage.m"; sourceTree = "<group>"; };
 		7F4F925019342CD5006A2F08 /* DHEditTaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DHEditTaskViewController.h; sourceTree = "<group>"; };
@@ -163,6 +164,7 @@
 				7F51B9A91932F43F0074EAAE /* DHGoalDBInterface.m */,
 				7F40DB64195FAAC000C28962 /* UIImage+DHScaledImage.h */,
 				7F40DB65195FAAC000C28962 /* UIImage+DHScaledImage.m */,
+				7F0EC3B5196626C900309003 /* DHGlobalConstants.h */,
 				7F51B9851932E72F0074EAAE /* Images.xcassets */,
 				7F51B9711932E72F0074EAAE /* Supporting Files */,
 			);

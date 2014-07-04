@@ -17,8 +17,26 @@
     } else { //scale until height is equal to size.width
         scale = size.width / self.size.width;
     }
-    UIImage *scaledImage = [UIImage imageWithCGImage:[self CGImage] scale:1.0/scale orientation:self.imageOrientation];
+//    UIImage *scaledImage = [UIImage imageWithCGImage:[self CGImage] scale:1.0/scale orientation:self.imageOrientation];
+  
+    UIGraphicsBeginImageContext(size);
+    [self drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+   // NSLog(@"%d\n%d", [UIImagePNGRepresentation(self) length],
+     //     [UIImagePNGRepresentation(scaledImage) length]);
+    
     return scaledImage;
 }
 
 @end
+
+/**
+ UIImage *originalImage = ...;
+ CGSize destinationSize = ...;
+ UIGraphicsBeginImageContext(destinationSize);
+ [originalImage drawInRect:CGRectMake(0,0,destinationSize.width,destinationSize.height)];
+ UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+ UIGraphicsEndImageContext();
+*/

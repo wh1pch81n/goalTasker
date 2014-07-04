@@ -7,6 +7,8 @@
 //
 
 #import "DHEditTaskViewController.h"
+#import "UIImage+DHScaledImage.h"
+#import "DHGlobalConstants.h"
 
 @interface DHEditTaskViewController ()
 
@@ -15,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *buttonDone;
 
 @property (strong, nonatomic) NSString *libraryCacheImagePath;
+@property (strong, nonatomic) NSNumber *libraryCacheImageOrientation;
 
 @end
 
@@ -22,14 +25,16 @@
 
 -(void)viewDidLoad {
     [super viewDidLoad];
-    [self addObserver:self forKeyPath:NSStringFromSelector(@selector(imageAsString)) options:NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self forKeyPath:NSStringFromSelector(@selector(imagePath)) options:NSKeyValueObservingOptionNew context:nil];
+    //[self addObserver:self forKeyPath:NSStringFromSelector(@selector(imageOrientation)) options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(description)) options:NSKeyValueObservingOptionNew context:nil];
     
     [self.textView becomeFirstResponder];
 }
 
 -(void)dealloc {
-    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(imageAsString))];
+    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(imagePath))];
+    //[self removeObserver:self forKeyPath:NSStringFromSelector(@selector(imageOrientation))];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(description))];
     [self.textView resignFirstResponder];
 }
@@ -37,14 +42,14 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqualToString:NSStringFromSelector(@selector(description))]) {
         [self.textView setText:self.description];
-    } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(imageAsString))]) {
-        if (!self.imageAsString || [self.imageAsString isEqualToString:@""]) {
-            return;
-        }
+    } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(imagePath))]) {
+        if (!self.imagePath || [self.imagePath isEqualToString:@""]) {return;}
+        
         __weak typeof(self)wSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             __strong typeof(wSelf)sSelf = wSelf;
-            UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfFile:self.imageAsString]];
+            NSString *thumb = [self.imagePath stringByAppendingPathExtension:@"thumbnail"];
+            UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfFile:thumb]];
             __weak typeof(sSelf)wSelf = sSelf;
             dispatch_async(dispatch_get_main_queue(), ^{
                 __strong typeof(wSelf)sSelf = wSelf;
@@ -85,7 +90,7 @@
     NSLog(@"Just Tapped Done");
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.delegate) {
-            [self.delegate editTaskView:self doneWithDescription:self.textView.text imageAsStr:self.libraryCacheImagePath];
+            [self.delegate editTaskView:self doneWithDescription:self.textView.text imagePath:self.libraryCacheImagePath imageOrientation:self.libraryCacheImageOrientation];
         }
     }];
 }
@@ -119,10 +124,27 @@
         
         //get the image from the picker and write it to disk
         UIImage *image = info[UIImagePickerControllerOriginalImage];
-        NSData *imageAsData = UIImagePNGRepresentation(image);
-        [imageAsData writeToFile:imagePath atomically:YES];
+        UIImage *imageThumb = [image imageScaledToFitInSize:kThumbImageSize];
+        
+        sSelf.libraryCacheImageOrientation = @(image.imageOrientation);//saving the image orientation
         
         __weak typeof(sSelf)wSelf = sSelf;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            //saving full image to disk
+            NSData *imageAsData = UIImagePNGRepresentation(image);
+            [imageAsData writeToFile:imagePath atomically:YES];
+            NSLog(@"done saving full image\n%@", imagePath);
+        });
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ //TODO: this might be slightly dangerous.  IT might be safer to move this code into the main thread.
+            
+            //saving thumbnail of image to disk.
+            NSData *imageThumbAsData = UIImagePNGRepresentation(imageThumb);
+            //why is this not the right path?
+            NSString *imageThumbPath = [imagePath stringByAppendingPathExtension:@"thumbnail"];
+            [imageThumbAsData writeToFile:imageThumbPath atomically:YES];
+            NSLog(@"done saving Thumbnail image\n%@", imageThumbPath);
+        });
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(wSelf)sSelf = wSelf;
             [sSelf.buttonDone setHidden:NO];
@@ -138,8 +160,6 @@
             ssSelf.image.image = info[UIImagePickerControllerOriginalImage];
         });
     });
-
-    
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
