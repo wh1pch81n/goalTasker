@@ -27,6 +27,7 @@
 @property (strong, nonatomic) NSNumber *accomplished;
 @property (weak, nonatomic) IBOutlet UIImageView *imageStored;
 @property (strong, nonatomic) NSString *imageAsText;
+@property (strong, nonatomic) NSNumber *imageOrientation;
 
 @property (weak) id<DHTableViewCellDelegate> delegate;
 

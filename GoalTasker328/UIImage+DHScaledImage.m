@@ -17,15 +17,11 @@
     } else { //scale until height is equal to size.width
         scale = size.width / self.size.width;
     }
-//    UIImage *scaledImage = [UIImage imageWithCGImage:[self CGImage] scale:1.0/scale orientation:self.imageOrientation];
-  
+
     UIGraphicsBeginImageContext(size);
-    [self drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    [self drawInRect:CGRectMake(0, 0, self.size.width * scale, self.size.height * scale)];
     UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
-   // NSLog(@"%d\n%d", [UIImagePNGRepresentation(self) length],
-     //     [UIImagePNGRepresentation(scaledImage) length]);
     
     return scaledImage;
 }

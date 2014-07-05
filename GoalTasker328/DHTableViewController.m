@@ -164,11 +164,13 @@ typedef enum : NSUInteger {
             [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
             [cell setAccomplished:row[@"accomplished"]];
             [cell setImageAsText:row[@"image"]];
+            [cell setImageOrientation:row[@"image_orientation"]];
             [cell.imageStored setImage:nil];
             __weak typeof(sSelf)wSelf = sSelf;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 __strong typeof(wSelf)sSelf = wSelf;
-                //TODO: change this to load the thumbnail version of the image.  Apparently the resizing of the image is causing the
+                
+                if ([row[@"image"] isEqualToString:@""]){return;}
                 NSString *thumbPath = [row[@"image"] stringByAppendingPathExtension:@"thumbnail"];
                 UIImage *thumbnail = [UIImage imageWithContentsOfFile:thumbPath];
                 thumbnail = [UIImage imageWithCGImage:thumbnail.CGImage
@@ -195,8 +197,8 @@ typedef enum : NSUInteger {
             [editView setId:tvCell.id];
             [editView setImagePath:tvCell.imageAsText];
             [editView setCell:tvCell];
+            [editView setImageOrientation:tvCell.imageOrientation];
         });
-        
     }];
 }
 
@@ -224,19 +226,25 @@ typedef enum : NSUInteger {
         if(err){
             NSLog(@"Failed to move image to new location:%@", [err localizedDescription]);
         }
-        [[NSFileManager defaultManager] moveItemAtPath:[oldPath stringByAppendingPathExtension:@"thumbnail"]
-                                                toPath:[imagePath stringByAppendingPathExtension:@"thumbnail"]
-                                                 error:&err];
+        [[NSFileManager defaultManager]
+         moveItemAtPath:[oldPath stringByAppendingPathExtension:@"thumbnail"]
+         toPath:[imagePath stringByAppendingPathExtension:@"thumbnail"]
+         error:&err];
         if(err){
             NSLog(@"Failed to move thumbnail to new location:%@", [err localizedDescription]);
         }
     }
     
+    //convert text->data->datastr because a single quote from plain text might make the save fail
+    NSData *data = [text dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *dataStr = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    
     __weak typeof(self)wSelf = self;
-    if (self.editTaskViewMode == DHEditTaskModeNewTask) { //TODO: fix issue where image is not saving.  Its probably some issue with the path. or text
+    if (self.editTaskViewMode == DHEditTaskModeNewTask) {
+               
         [[DHGoalDBInterface instance]
          insertSomething:@{@"pid":@(self.parentID),
-                           @"description":text,
+                           @"description":dataStr,
                            @"date_created":@"NOW",
                            @"date_modified":@"NOW",
                            @"accomplished":@(NO),
@@ -265,24 +273,25 @@ typedef enum : NSUInteger {
                  NSError *err;
                  [[NSFileManager defaultManager] moveItemAtPath:path toPath:newPath error:&err];
                  if(err) {NSLog(@"Error: %@", [err localizedDescription]);}
-             }
-             NSString *pathThumb = [path stringByAppendingPathExtension:@"thumbnail"];
-             if ([[NSFileManager defaultManager] fileExistsAtPath:pathThumb]) {
-                 //move old image thumb files to volitile space.
-                 NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-                 NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
-                 NSString *newPath = [libCacheDir stringByAppendingPathComponent:uniqueFileName];
-                 NSError *err;
-                 [[NSFileManager defaultManager] moveItemAtPath:pathThumb toPath:newPath error:&err];
-                 if(err) {NSLog(@"Error: %@", [err localizedDescription]);}
+             
+                 NSString *pathThumb = [path stringByAppendingPathExtension:@"thumbnail"];
+                 if ([[NSFileManager defaultManager] fileExistsAtPath:pathThumb]) {
+                     //move old image thumb files to volitile space.
+                     NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+                     NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
+                     NSString *newPath = [libCacheDir stringByAppendingPathComponent:uniqueFileName];
+                     NSError *err;
+                     [[NSFileManager defaultManager] moveItemAtPath:pathThumb toPath:newPath error:&err];
+                     if(err) {NSLog(@"Error: %@", [err localizedDescription]);}
+                 }
              }
          }];
         
         [[DHGoalDBInterface instance]
          updateTaskWithID:editTaskView.id
-         taskDescription:text
+         taskDescription:dataStr
          imageAsText:imagePath?:@""
-         imageOrientation:imageOrientation
+         imageOrientation:imageOrientation?:@(0)
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if(err ) {

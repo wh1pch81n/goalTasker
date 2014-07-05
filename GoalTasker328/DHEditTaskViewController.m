@@ -50,6 +50,7 @@
             __strong typeof(wSelf)sSelf = wSelf;
             NSString *thumb = [self.imagePath stringByAppendingPathExtension:@"thumbnail"];
             UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfFile:thumb]];
+            img = [UIImage imageWithCGImage:img.CGImage scale:1 orientation:self.imageOrientation.integerValue];
             __weak typeof(sSelf)wSelf = sSelf;
             dispatch_async(dispatch_get_main_queue(), ^{
                 __strong typeof(wSelf)sSelf = wSelf;

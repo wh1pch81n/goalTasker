@@ -154,4 +154,17 @@
     return dateStrAdjForSystemTimeZone;
 }
 
+- (void)setDescription:(NSString *)description {
+    __weak typeof(self)wSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __strong typeof(wSelf)sSelf = wSelf;
+        NSData *dataStr = [[NSData alloc] initWithBase64EncodedString:description options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        __weak typeof(sSelf)wSelf = sSelf;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            __strong typeof(wSelf)sSelf = wSelf;
+            sSelf.description = [[NSString alloc] initWithData:dataStr encoding:NSUTF8StringEncoding];
+       });
+    });
+}
+
 @end

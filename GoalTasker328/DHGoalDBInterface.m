@@ -93,7 +93,7 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                        " date_modified = DATETIME('NOW'), "
                        " description = '%@', "
                        " image = '%@', "
-                       " image_orientation = %@, "
+                       " image_orientation = %@ "
                        " WHERE id = %@ ", taskDescription, imageAsText, imageOrientation, id];
     [self makeQuery:query completed:cb];
 }
@@ -223,7 +223,7 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
             }
             sqlite3_finalize(statement);
         } else {
-            NSLog(@"Could not prepare");
+            NSLog(@"Could not prepare: %@", query);
             if(cb) {cb([self generateError], nil);}
         }
         sqlite3_close(_goalDB);
