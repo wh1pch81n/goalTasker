@@ -155,6 +155,9 @@
 }
 
 - (void)setDescription:(NSString *)description {
+    if (!description) {
+        return;
+    }
     __weak typeof(self)wSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         __strong typeof(wSelf)sSelf = wSelf;
