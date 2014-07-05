@@ -25,8 +25,8 @@
                         <outletCollection property="gestureRecognizers" destination="BOm-bD-xcC" appends="YES" id="dbo-hs-f2w"/>
                     </connections>
                 </imageView>
-                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3ah-27-fwx">
-                    <rect key="frame" x="8" y="128" width="304" height="161"/>
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3ah-27-fwx">
+                    <rect key="frame" x="8" y="128" width="304" height="215"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
@@ -57,6 +57,12 @@
                 </button>
             </subviews>
             <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="3ah-27-fwx" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="1Kv-Ba-etg"/>
+                <constraint firstAttribute="trailing" secondItem="3ah-27-fwx" secondAttribute="trailing" constant="8" id="dC3-w3-qf5"/>
+                <constraint firstAttribute="bottom" secondItem="3ah-27-fwx" secondAttribute="bottom" constant="225" id="ugm-2K-3D8"/>
+                <constraint firstItem="3ah-27-fwx" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="128" id="vG4-2R-9Zy"/>
+            </constraints>
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
         </view>
