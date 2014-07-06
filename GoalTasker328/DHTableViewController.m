@@ -223,7 +223,9 @@ typedef enum : NSUInteger {
 - (void)tableViewCell:(DHTableViewCell *)tvCell accomplishedPressed:(UISwitch *)sender {
     __weak typeof(self)wSelf = self;
     [[DHGoalDBInterface instance]
-     updateTaskWithID:tvCell.id isAccomplished:@(sender.on) complete:^(NSError *err, NSDictionary *obj) {
+     updateTaskWithID:tvCell.id.unsignedIntegerValue
+     isAccomplished:sender.on
+     complete:^(NSError *err, NSDictionary *obj) {
          __strong typeof(wSelf)sSelf = wSelf;
          [sSelf.tableView reloadData];
      }];
@@ -261,10 +263,10 @@ typedef enum : NSUInteger {
     if (self.editTaskViewMode == DHEditTaskModeNewTask) {
                
         [[DHGoalDBInterface instance]
-         insertNewEntryUnderPID:@(self.parentID)
+         insertNewEntryUnderPID:self.parentID
          description:dataStr
          imagePath:imagePath?:@""
-         imageOrientation:imageOrientation?:@(0)
+         imageOrientation:imageOrientation.unsignedIntegerValue
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if (err) {
@@ -302,10 +304,10 @@ typedef enum : NSUInteger {
          }];
         
         [[DHGoalDBInterface instance]
-         updateTaskWithID:editTaskView.id
+         updateTaskWithID:editTaskView.id.unsignedIntegerValue
          taskDescription:dataStr
          imageAsText:imagePath?:@""
-         imageOrientation:imageOrientation?:@(0)
+         imageOrientation:imageOrientation.unsignedIntegerValue
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if(err ) {

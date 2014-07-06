@@ -19,14 +19,19 @@
  @param pid The parent id that you want to add this under.
  @param desc the text that gets saved into the task
  @param imagePath a path to the image
- @param imgOrientation an integer value detailes the orientation of the image (saved into an nsnumber)
+ @param imgOrientation an integer value detailes the orientation of the image
  @param cb a call back function that lets you deal with err.  Obj is always null
  */
-- (void)insertNewEntryUnderPID:(NSNumber *)pid description:(NSString *)desc imagePath:(NSString *)imagePath imageOrientation:(NSNumber *)imgOrientation complete:(void(^)(NSError *err, NSDictionary *obj)) cb;
+- (void)insertNewEntryUnderPID:(NSUInteger)pid description:(NSString *)desc imagePath:(NSString *)imagePath imageOrientation:(NSUInteger)imgOrientation complete:(void(^)(NSError *err, NSDictionary *obj)) cb;
 
-- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription imageAsText:(NSString *)imageAsText imageOrientation:(NSNumber *)imageOrientation complete:(void (^)(NSError *err, NSDictionary *obj))cb;
+/**
+ Delete the specified row with id
+ */
+- (void)deleteRowThatHasId:(NSUInteger)id;
+
+- (void)updateTaskWithID:(NSUInteger)id taskDescription:(NSString *)taskDescription imageAsText:(NSString *)imageAsText imageOrientation:(NSUInteger)imageOrientation complete:(void (^)(NSError *err, NSDictionary *obj))cb;
 //- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription image:(UIImage *)image complete:(void (^)(NSError *err, NSDictionary *obj))cb;
-- (void)updateTaskWithID:(NSNumber *)id isAccomplished:(NSNumber *)accomplished complete:(void (^)(NSError *err, NSDictionary *obj))cb;
+- (void)updateTaskWithID:(NSUInteger)id isAccomplished:(BOOL)accomplished complete:(void (^)(NSError *err, NSDictionary *obj))cb;
 
 /**
  Calls SELECT on the goal table.  Filtering it based on creation date in descending order
