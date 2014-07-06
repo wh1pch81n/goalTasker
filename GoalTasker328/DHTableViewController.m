@@ -98,7 +98,17 @@ typedef enum : NSUInteger {
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         //add code here for when you hit delete
-        #warning needs implementing
+        DHTableViewCell *cell = (id)[tableView cellForRowAtIndexPath:indexPath];
+        if (cell) {
+            [[DHGoalDBInterface instance]
+             deleteRowThatHasId:cell.id.unsignedIntValue
+             complete:^(NSError *err, NSDictionary *obj) {
+                 if(err){
+                     NSLog(@"was not able to delete row");
+                 }
+                 [tableView reloadData];
+             }];
+        }
     }
 }
 
@@ -223,7 +233,7 @@ typedef enum : NSUInteger {
 - (void)tableViewCell:(DHTableViewCell *)tvCell accomplishedPressed:(UISwitch *)sender {
     __weak typeof(self)wSelf = self;
     [[DHGoalDBInterface instance]
-     updateTaskWithID:tvCell.id.unsignedIntegerValue
+     updateTaskWithID:tvCell.id.unsignedIntValue
      isAccomplished:sender.on
      complete:^(NSError *err, NSDictionary *obj) {
          __strong typeof(wSelf)sSelf = wSelf;
@@ -266,7 +276,7 @@ typedef enum : NSUInteger {
          insertNewEntryUnderPID:self.parentID
          description:dataStr
          imagePath:imagePath?:@""
-         imageOrientation:imageOrientation.unsignedIntegerValue
+         imageOrientation:imageOrientation.unsignedIntValue
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if (err) {
@@ -304,10 +314,10 @@ typedef enum : NSUInteger {
          }];
         
         [[DHGoalDBInterface instance]
-         updateTaskWithID:editTaskView.id.unsignedIntegerValue
+         updateTaskWithID:editTaskView.id.unsignedIntValue
          taskDescription:dataStr
          imageAsText:imagePath?:@""
-         imageOrientation:imageOrientation.unsignedIntegerValue
+         imageOrientation:imageOrientation.unsignedIntValue
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if(err ) {

@@ -27,7 +27,7 @@
 /**
  Delete the specified row with id
  */
-- (void)deleteRowThatHasId:(NSUInteger)id;
+- (void)deleteRowThatHasId:(NSUInteger)id complete:(void(^)(NSError *err, NSDictionary *obj))cb ;
 
 - (void)updateTaskWithID:(NSUInteger)id taskDescription:(NSString *)taskDescription imageAsText:(NSString *)imageAsText imageOrientation:(NSUInteger)imageOrientation complete:(void (^)(NSError *err, NSDictionary *obj))cb;
 //- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription image:(UIImage *)image complete:(void (^)(NSError *err, NSDictionary *obj))cb;

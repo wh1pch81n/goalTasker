@@ -134,7 +134,7 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
 //    [self makeQuery:query completed:cb];
 //}
 
-- (void)insertNewEntryUnderPID:(NSUInteger)pid description:(NSString *)desc imagePath:(NSString *)imagePath imageOrientation:(NSUInteger)imgOrientation complete:(void(^)(NSError *err, NSDictionary *obj)) cb {
+- (void)insertNewEntryUnderPID:(NSUInteger)pid description:(NSString *)desc imagePath:(NSString *)imagePath imageOrientation:(NSUInteger)imgOrientation complete:(void(^)(NSError *err, NSDictionary *obj))cb {
     NSString *query = [NSString stringWithFormat:
                        @"INSERT INTO goals ( "
                        " pid, "
@@ -147,6 +147,13 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                        " ) "
                        " values (%ld, '%@',DATETIME('NOW'),DATETIME('NOW'), 0, '%@', %ld);",
                        pid, desc, imagePath, imgOrientation];
+    [self makeQuery:query completed:cb];
+}
+
+- (void)deleteRowThatHasId:(NSUInteger)id complete:(void(^)(NSError *err, NSDictionary *obj))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"DELETE FROM goals "
+                       " WHERE id = %ld; ", id];
     [self makeQuery:query completed:cb];
 }
 
