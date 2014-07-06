@@ -63,8 +63,22 @@
 - (void)totalNumberOfRowsWithCallBack:(void (^)(NSError *err, NSDictionary *obj))cb;
 
 /**
- Will return the current total number of rows that live under the given parent n the goals table
+ Will return the current total number of rows that live under the given parent n the goals table.  The item will have the key: @b"totalNumberOfRowsUnderParent"
+ 
+ @code
+ __block NSInteger count = 0;
+ [[DHGoalDBInterface instance] totalNumberOfRowsUnderParentId:self.parentID withCallBack:^(NSError *err, NSDictionary *obj) {
+ if (err) {
+ NSLog(@"Unable to get total");
+ return;
+ }
+ count = [[obj[@"rows"] lastObject][@"totalNumberOfRowsUnderParent"] integerValue];
+ }];
+ @endcode
+ 
  */
 - (void)totalNumberOfRowsUnderParentId:(NSUInteger)pid withCallBack:(void (^)(NSError *err, NSDictionary *obj))cb;
+
+- (NSIndexPath *)indexPathOfGoalObjectUnderParentId:(NSUInteger)pid withID:(NSUInteger)id;
 
 @end

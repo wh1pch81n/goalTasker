@@ -209,17 +209,47 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
 
 - (void)totalNumberOfRowsWithCallBack:(void (^)(NSError *, NSDictionary *))cb {
     NSString *query = [NSString stringWithFormat:
-                       @"SELECT count(id) "
+                       @"SELECT count(id) as totalNumberOfRowsUnderParent  "
                        " from goals "];
     [self makeQuery:query completed:cb];
 }
 
 - (void)totalNumberOfRowsUnderParentId:(NSUInteger)pid withCallBack:(void (^)(NSError *, NSDictionary *))cb {
     NSString *query = [NSString stringWithFormat:
-                       @"SELECT count(id) "
+                       @"SELECT count(id) as totalNumberOfRowsUnderParent "
                        " from goals "
                        " WHERE pid = %ld ", pid];
     [self makeQuery:query completed:cb];
+}
+
+- (NSIndexPath *)indexPathOfGoalObjectUnderParentId:(NSUInteger)pid withID:(NSUInteger)id {
+    __block NSIndexPath *indexPath;
+    [[DHGoalDBInterface instance] getRowWithId:id complete:^(NSError *err, NSDictionary *obj) {
+        if(err){NSLog(@"unable to get row with id"); return;}
+        NSDictionary *row = [obj[@"rows"] firstObject];
+        NSNumber *r_acc = row[@"accomplished"];
+        NSString *r_dm = row[@"date_modified"];
+        
+        NSString *query = [NSString stringWithFormat:
+                           @"SELECT count(id) as numAboveCurrRow "
+                           " from goals "
+                           " WHERE pid = %ld AND ( "
+                           "      (accomplished < %@) OR "
+                           "      (accomplished = %@ AND date_modified > '%@') "
+                           " ); ",
+                           pid,
+                           r_acc,
+                           r_acc,
+                           r_dm];
+        [[DHGoalDBInterface instance] makeQuery:query completed:^(NSError *err, NSDictionary *obj) {
+            if(err){NSLog(@"unable to get indexpath of goal object under parent id"); return;}
+            
+            int row = [[[obj[@"rows"] firstObject] objectForKey:@"numAboveCurrRow"] intValue];
+            indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+        }];
+    }];
+    
+    return indexPath;
 }
 
 - (void)makeQuery:(NSString *)query completed:(void(^)(NSError *err, NSDictionary *obj))cb

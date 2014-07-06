@@ -111,24 +111,26 @@ typedef enum : NSUInteger {
                  
                  //move image and thumb to volitile place
                  NSString *imgPath = row[@"image"];
-                 NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-                 
-                 NSString *newPath = [libCacheDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
-                 [[NSFileManager defaultManager] moveItemAtPath:imgPath
-                                                         toPath:newPath
-                                                          error:&err];
-                 if (err) {
-                     NSLog(@"Unable to move full image to volitile place");
-                     return;
-                 }
-                 imgPath = [imgPath stringByAppendingPathExtension:@"thumbnail"];
-                 newPath = [newPath stringByAppendingPathExtension:@"thumbnail"];
-                 [[NSFileManager defaultManager] moveItemAtPath:imgPath
-                                                         toPath:newPath
-                                                          error:&err];
-                 if (err) {
-                     NSLog(@"Unable to move thumb image to volitile place");
-                     return;
+                 if ([[NSFileManager defaultManager] fileExistsAtPath:imgPath]) {
+                     NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+                     
+                     NSString *newPath = [libCacheDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+                     [[NSFileManager defaultManager] moveItemAtPath:imgPath
+                                                             toPath:newPath
+                                                              error:&err];
+                     if (err) {
+                         NSLog(@"Unable to move full image to volitile place");
+                         return;
+                     }
+                     imgPath = [imgPath stringByAppendingPathExtension:@"thumbnail"];
+                     newPath = [newPath stringByAppendingPathExtension:@"thumbnail"];
+                     [[NSFileManager defaultManager] moveItemAtPath:imgPath
+                                                             toPath:newPath
+                                                              error:&err];
+                     if (err) {
+                         NSLog(@"Unable to move thumb image to volitile place");
+                         return;
+                     }
                  }
              }];
             
@@ -139,7 +141,8 @@ typedef enum : NSUInteger {
                      NSLog(@"was not able to delete row");
                      return;
                  }
-                 [tableView reloadData];
+                 //                 [tableView reloadData];
+                 [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
              }];
         }
     }
@@ -152,7 +155,7 @@ typedef enum : NSUInteger {
             NSLog(@"Unable to get total");
             return;
         }
-        count = [[obj[@"rows"] lastObject][@"count(id)"] integerValue];
+        count = [[obj[@"rows"] lastObject][@"totalNumberOfRowsUnderParent"] integerValue];
     }];
     
     return count;
@@ -195,6 +198,12 @@ typedef enum : NSUInteger {
         [newTBVC setParentID:[row[@"id"] integerValue]];
     }];
     [self.navigationController pushViewController:newTBVC animated:YES];
+    
+    //debugging
+//    DHTableViewCell *cell = (id)[tableView cellForRowAtIndexPath:indexPath];
+//    NSLog(@"indexPath: %@",
+//          [[DHGoalDBInterface instance] indexPathOfGoalObjectUnderParentId:cell.pid.intValue
+//                                                                    withID:cell.id.intValue]);
 }
 
 - (void)configureCell:(DHTableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath isForOffscreenUse:(BOOL)offscreenUse {
@@ -264,13 +273,32 @@ typedef enum : NSUInteger {
 }
 
 - (void)tableViewCell:(DHTableViewCell *)tvCell accomplishedPressed:(UISwitch *)sender {
+    __block NSIndexPath *oldIndexPath = [[DHGoalDBInterface instance]
+                                         indexPathOfGoalObjectUnderParentId:tvCell.pid.intValue
+                                         withID:tvCell.id.intValue];
+    __block NSIndexPath *newIndexPath;
     __weak typeof(self)wSelf = self;
     [[DHGoalDBInterface instance]
      updateTaskWithID:tvCell.id.unsignedIntValue
      isAccomplished:sender.on
      complete:^(NSError *err, NSDictionary *obj) {
          __strong typeof(wSelf)sSelf = wSelf;
-         [sSelf.tableView reloadData];
+         if(err){NSLog(@"accomplishment change failed"); return;}
+         
+         [[DHGoalDBInterface instance] getRowWithId:tvCell.id.intValue
+                                           complete:^(NSError *err, NSDictionary *obj) {
+                                               if (err) {NSLog(@""); return;}
+                                               NSDictionary *row = obj[@"rows"][0];
+                                               [tvCell setDate_modified:row[@"date_modified"]
+                                                     adjustForLocalTime:YES] ;
+                                           }];
+         
+         newIndexPath = [[DHGoalDBInterface instance]
+                         indexPathOfGoalObjectUnderParentId:tvCell.pid.intValue
+                         withID:tvCell.id.intValue];
+         NSLog(@"\n%@\n%@",oldIndexPath, newIndexPath);
+         [sSelf.tableView moveRowAtIndexPath:oldIndexPath
+                                 toIndexPath:newIndexPath];
      }];
 }
 
@@ -278,7 +306,7 @@ typedef enum : NSUInteger {
 
 - (void)editTaskView:(DHEditTaskViewController *)editTaskView doneWithDescription:(NSString *)text imagePath:(NSString *)imagePath imageOrientation:(NSNumber *)imageOrientation {
     
-    if (imagePath) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
         //move imageAsStr from volitile directory to persistent documents directory
         NSString *oldPath = imagePath;
         NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
@@ -314,9 +342,10 @@ typedef enum : NSUInteger {
              __strong typeof(wSelf)sSelf = wSelf;
              if (err) {
                  NSLog(@"insertion error");
-             } else {
-                 [sSelf.tableView reloadData];
+                 return;
              }
+             [sSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]
+                                    withRowAnimation:UITableViewRowAnimationTop];
          }];
     } else if (self.editTaskViewMode == DHEditTaskModeUpdateTask) {
         //find old image file path if any then move it to a volitile directory
@@ -344,6 +373,10 @@ typedef enum : NSUInteger {
              }
          }];
         
+        __block NSIndexPath *oldIndexPath = [[DHGoalDBInterface instance]
+                                             indexPathOfGoalObjectUnderParentId:self.parentID
+                                             withID:editTaskView.id.unsignedIntValue];
+        __block NSIndexPath *newIndexPath;
         [[DHGoalDBInterface instance]
          updateTaskWithID:editTaskView.id.unsignedIntValue
          taskDescription:dataStr
@@ -355,25 +388,62 @@ typedef enum : NSUInteger {
                  NSLog(@"updating error");
                  return;
              }
-             [sSelf.tableView reloadData];
+  
+
+             __weak typeof(self)wSelf = self;
+             [[DHGoalDBInterface instance] getRowWithId:editTaskView.id.intValue
+                                               complete:^(NSError *err, NSDictionary *obj) {
+                                                   __strong typeof(wSelf)sSelf = wSelf;
+                                                   if (err) {NSLog(@""); return;}
+                                                   NSDictionary *row = obj[@"rows"][0];
+                                                   DHTableViewCell *cell = (id)[sSelf.tableView cellForRowAtIndexPath:oldIndexPath];
+//                                                   [cell setDate_modified:row[@"date_modified"]
+//                                                       adjustForLocalTime:YES];
+//                                                   [cell setDescription:row[@"description"]];
+//                                                   [cell setImageAsText:<#(NSString *)#>]
+                                                   ///
+                                                   [cell setId:row[@"id"]];
+                                                   [cell setPid:row[@"pid"]];
+                                                   [cell setDescription:row[@"description"]];
+                                                   [cell setDate_created:row[@"date_created"] adjustForLocalTime:YES];
+                                                   [cell setDate_modified:row[@"date_modified"] adjustForLocalTime:YES];
+                                                   [cell setAccomplished:row[@"accomplished"]];
+                                                   [cell setImageAsText:row[@"image"]];
+                                                   [cell setImageOrientation:row[@"image_orientation"]];
+                                                   [cell.imageStored setImage:nil];
+                                                   
+                                                   newIndexPath = [[DHGoalDBInterface instance]
+                                                                   indexPathOfGoalObjectUnderParentId:sSelf.parentID
+                                                                   withID:editTaskView.id.intValue];
+                                                   NSLog(@"\n%@\n%@",oldIndexPath, newIndexPath);
+                                                   [sSelf.tableView moveRowAtIndexPath:oldIndexPath
+                                                                           toIndexPath:newIndexPath];
+                                                   __weak typeof(sSelf)wSelf = sSelf;
+                                                   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                                       __strong typeof(wSelf)sSelf = wSelf;
+                                                       
+                                                       if ([row[@"image"] isEqualToString:@""]){return;}
+                                                       NSString *thumbPath = [row[@"image"] stringByAppendingPathExtension:@"thumbnail"];
+                                                       UIImage *thumbnail = [UIImage imageWithContentsOfFile:thumbPath];
+                                                       thumbnail = [UIImage imageWithCGImage:thumbnail.CGImage
+                                                                                       scale:1.0 orientation:[row[@"image_orientation"] integerValue]];
+                                                       __weak typeof(sSelf)wSelf = sSelf;
+                                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                                           __strong typeof(wSelf)sSelf = wSelf;
+                                                           DHTableViewCell *cell = (id)[sSelf.tableView cellForRowAtIndexPath:newIndexPath];
+                                                           if (cell) {
+                                                               [cell.imageStored setImage:thumbnail];
+                                                           }
+                                                       });
+                                                   });
+                                               }];
              
-             //since the modified one will become the top one, just scroll all the way to the top
-             NSIndexPath *indexpath = [NSIndexPath indexPathForRow:0 inSection:0];
-             [sSelf.tableView selectRowAtIndexPath:indexpath animated:YES scrollPosition:UITableViewScrollPositionTop];
-             [sSelf.tableView deselectRowAtIndexPath:indexpath animated:YES];
+             
          }];
     }
 }
 
-//TODO: handle the deletions frm sqlite database.  Also remember to delete picture from disk
 
-- (void)editTaskView:(DHEditTaskViewController *)editTaskView closeWithSender:(id)sender {
-    
-}
-
-//- (void)tappedImageButton:(id)sender imageView:(UIImageView *)image {
-//    
-//}
-
+- (void)editTaskView:(DHEditTaskViewController *)editTaskView closeWithSender:(id)sender {}
 
 @end

@@ -91,7 +91,9 @@
     NSLog(@"Just Tapped Done");
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.delegate) {
-            [self.delegate editTaskView:self doneWithDescription:self.textView.text imagePath:self.libraryCacheImagePath imageOrientation:self.libraryCacheImageOrientation];
+            [self.delegate editTaskView:self doneWithDescription:self.textView.text
+                              imagePath:self.libraryCacheImagePath?:self.imagePath
+                       imageOrientation:self.libraryCacheImageOrientation?:self.imageOrientation];
         }
     }];
 }
