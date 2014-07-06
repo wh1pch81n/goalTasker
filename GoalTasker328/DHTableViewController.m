@@ -101,10 +101,43 @@ typedef enum : NSUInteger {
         DHTableViewCell *cell = (id)[tableView cellForRowAtIndexPath:indexPath];
         if (cell) {
             [[DHGoalDBInterface instance]
+             getRowWithId:cell.id.unsignedIntValue
+             complete:^(NSError *err, NSDictionary *obj) {
+                 if (err) {
+                     NSLog(@"Unable to find row with id");
+                     return;
+                 }
+                 NSDictionary *row = obj[@"rows"][0];
+                 
+                 //move image and thumb to volitile place
+                 NSString *imgPath = row[@"image"];
+                 NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+                 
+                 NSString *newPath = [libCacheDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+                 [[NSFileManager defaultManager] moveItemAtPath:imgPath
+                                                         toPath:newPath
+                                                          error:&err];
+                 if (err) {
+                     NSLog(@"Unable to move full image to volitile place");
+                     return;
+                 }
+                 imgPath = [imgPath stringByAppendingPathExtension:@"thumbnail"];
+                 newPath = [newPath stringByAppendingPathExtension:@"thumbnail"];
+                 [[NSFileManager defaultManager] moveItemAtPath:imgPath
+                                                         toPath:newPath
+                                                          error:&err];
+                 if (err) {
+                     NSLog(@"Unable to move thumb image to volitile place");
+                     return;
+                 }
+             }];
+            
+            [[DHGoalDBInterface instance]
              deleteRowThatHasId:cell.id.unsignedIntValue
              complete:^(NSError *err, NSDictionary *obj) {
                  if(err){
                      NSLog(@"was not able to delete row");
+                     return;
                  }
                  [tableView reloadData];
              }];
@@ -303,9 +336,7 @@ typedef enum : NSUInteger {
                  NSString *pathThumb = [path stringByAppendingPathExtension:@"thumbnail"];
                  if ([[NSFileManager defaultManager] fileExistsAtPath:pathThumb]) {
                      //move old image thumb files to volitile space.
-                     NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-                     NSString *uniqueFileName = [[NSUUID UUID] UUIDString];
-                     NSString *newPath = [libCacheDir stringByAppendingPathComponent:uniqueFileName];
+                     newPath = [newPath stringByAppendingPathExtension:@"thumbnail"];
                      NSError *err;
                      [[NSFileManager defaultManager] moveItemAtPath:pathThumb toPath:newPath error:&err];
                      if(err) {NSLog(@"Error: %@", [err localizedDescription]);}
