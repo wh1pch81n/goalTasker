@@ -261,14 +261,10 @@ typedef enum : NSUInteger {
     if (self.editTaskViewMode == DHEditTaskModeNewTask) {
                
         [[DHGoalDBInterface instance]
-         insertSomething:@{@"pid":@(self.parentID),
-                           @"description":dataStr,
-                           @"date_created":@"NOW",
-                           @"date_modified":@"NOW",
-                           @"accomplished":@(NO),
-                           @"image":imagePath?:@"",
-                           @"image_orientation":imageOrientation?:@(0)
-                           }
+         insertNewEntryUnderPID:@(self.parentID)
+         description:dataStr
+         imagePath:imagePath?:@""
+         imageOrientation:imageOrientation?:@(0)
          complete:^(NSError *err, NSDictionary *obj) {
              __strong typeof(wSelf)sSelf = wSelf;
              if (err) {

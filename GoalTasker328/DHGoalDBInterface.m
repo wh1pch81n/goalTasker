@@ -113,7 +113,28 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
           completed:cb];
 }
 
-- (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb {
+//- (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb {
+//    NSString *query = [NSString stringWithFormat:
+//                       @"INSERT INTO goals ( "
+//                       " pid, "
+//                       " description, "
+//                       " date_created, "
+//                       " date_modified, "
+//                       " accomplished, "
+//                       " image, "
+//                       " image_orientation "
+//                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@, '%@', %@);",
+//                       obj[@"pid"],
+//                       obj[@"description"],
+//                       obj[@"date_created"],
+//                       obj[@"date_modified"],
+//                       obj[@"accomplished"],
+//                       obj[@"image"],
+//                       obj[@"image_orientation"]];
+//    [self makeQuery:query completed:cb];
+//}
+
+- (void)insertNewEntryUnderPID:(NSNumber *)pid description:(NSString *)desc imagePath:(NSString *)imagePath imageOrientation:(NSNumber *)imgOrientation complete:(void(^)(NSError *err, NSDictionary *obj)) cb {
     NSString *query = [NSString stringWithFormat:
                        @"INSERT INTO goals ( "
                        " pid, "
@@ -123,14 +144,9 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                        " accomplished, "
                        " image, "
                        " image_orientation "
-                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@, '%@', %@);",
-                       obj[@"pid"],
-                       obj[@"description"],
-                       obj[@"date_created"],
-                       obj[@"date_modified"],
-                       obj[@"accomplished"],
-                       obj[@"image"],
-                       obj[@"image_orientation"]];
+                       " ) "
+                       " values (%@, '%@',DATETIME('NOW'),DATETIME('NOW'), 0, '%@', %@);",
+                       pid, desc, imagePath, imgOrientation];
     [self makeQuery:query completed:cb];
 }
 

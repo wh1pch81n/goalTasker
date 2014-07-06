@@ -12,7 +12,17 @@
 
 + (DHGoalDBInterface *)instance;
 //TODO:this should be replaced with specifics in orer to prevent a wrong insertion of a diciontary
-- (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb DEPRECATED_ATTRIBUTE;
+//- (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb DEPRECATED_ATTRIBUTE;
+
+/**
+ Generates a new entry into the database.
+ @param pid The parent id that you want to add this under.
+ @param desc the text that gets saved into the task
+ @param imagePath a path to the image
+ @param imgOrientation an integer value detailes the orientation of the image (saved into an nsnumber)
+ @param cb a call back function that lets you deal with err.  Obj is always null
+ */
+- (void)insertNewEntryUnderPID:(NSNumber *)pid description:(NSString *)desc imagePath:(NSString *)imagePath imageOrientation:(NSNumber *)imgOrientation complete:(void(^)(NSError *err, NSDictionary *obj)) cb;
 
 - (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription imageAsText:(NSString *)imageAsText imageOrientation:(NSNumber *)imageOrientation complete:(void (^)(NSError *err, NSDictionary *obj))cb;
 //- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription image:(UIImage *)image complete:(void (^)(NSError *err, NSDictionary *obj))cb;
