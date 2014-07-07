@@ -128,13 +128,14 @@
         //get the image from the picker and write it to disk
         UIImage *image = info[UIImagePickerControllerOriginalImage];
         UIImage *imageThumb = [image imageScaledToFitInSize:kThumbImageSize];
+        UIImage *imageFull = [image imageScaledToFitInSize:kFullImageSize];
         
         sSelf.libraryCacheImageOrientation = @(image.imageOrientation);//saving the image orientation
         
         __weak typeof(sSelf)wSelf = sSelf;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             //saving full image to disk
-            NSData *imageAsData = UIImagePNGRepresentation(image);
+            NSData *imageAsData = UIImagePNGRepresentation(imageFull);
             [imageAsData writeToFile:imagePath atomically:YES];
             NSLog(@"done saving full image\n%@", imagePath);
         });
@@ -142,7 +143,7 @@
             
             //saving thumbnail of image to disk.
             NSData *imageThumbAsData = UIImagePNGRepresentation(imageThumb);
-            //why is this not the right path?
+            
             NSString *imageThumbPath = [imagePath stringByAppendingPathExtension:@"thumbnail"];
             [imageThumbAsData writeToFile:imageThumbPath atomically:YES];
             NSLog(@"done saving Thumbnail image\n%@", imageThumbPath);
