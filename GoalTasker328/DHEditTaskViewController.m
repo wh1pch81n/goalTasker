@@ -26,7 +26,6 @@
 -(void)viewDidLoad {
     [super viewDidLoad];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(imagePath)) options:NSKeyValueObservingOptionNew context:nil];
-    //[self addObserver:self forKeyPath:NSStringFromSelector(@selector(imageOrientation)) options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(description)) options:NSKeyValueObservingOptionNew context:nil];
     
     [self.textView becomeFirstResponder];
@@ -34,7 +33,6 @@
 
 -(void)dealloc {
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(imagePath))];
-    //[self removeObserver:self forKeyPath:NSStringFromSelector(@selector(imageOrientation))];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(description))];
     [self.textView resignFirstResponder];
 }
@@ -139,8 +137,7 @@
             [imageAsData writeToFile:imagePath atomically:YES];
             NSLog(@"done saving full image\n%@", imagePath);
         });
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ //TODO: this might be slightly dangerous.  IT might be safer to move this code into the main thread.
-            
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             //saving thumbnail of image to disk.
             NSData *imageThumbAsData = UIImagePNGRepresentation(imageThumb);
             
@@ -152,7 +149,6 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             __strong typeof(wSelf)sSelf = wSelf;
             [sSelf.buttonDone setHidden:NO];
-            //TODO: Consider presenting a "loading" view on top rather than just hiding the button.  then finally dismiss this.
         });
     });
     

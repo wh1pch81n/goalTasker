@@ -10,7 +10,7 @@
 
 @interface DHTableViewCell ()
 
-//@property (weak, nonatomic) IBOutlet UILabel *accomplished; //if accomplish is enabled, it should be visible, other wise it will be grey.
+//@property (weak, nonatomic) IBOutlet UILabel *accomplished; //TODO: if accomplish is enabled, it should be visible, other wise it will be grey.
 @property (weak, nonatomic) IBOutlet UISwitch *toggleAccomplishment; //Tapping this should also toggle accomplishment
 
 @property (weak, nonatomic) IBOutlet UILabel *detailsOfTask;
@@ -35,9 +35,6 @@
     [self addObserver:self
            forKeyPath:NSStringFromSelector(@selector(accomplished))
               options:NSKeyValueObservingOptionNew context:nil];
-//    [self addObserver:self
-//           forKeyPath:NSStringFromSelector(@selector(imageAsText))
-//              options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)dealloc {
@@ -50,9 +47,6 @@
            forKeyPath:NSStringFromSelector(@selector(date_modified))];
     [self removeObserver:self
            forKeyPath:NSStringFromSelector(@selector(accomplished))];
-//    [self removeObserver:self
-//           forKeyPath:NSStringFromSelector(@selector(imageAsText))];
-
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -64,9 +58,7 @@
         [[self dateModified] setText:self.date_modified];
     } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(accomplished))]) {
         [[self toggleAccomplishment] setOn:[self.accomplished boolValue] animated:NO];
-    } /*else if ([keyPath isEqualToString:NSStringFromSelector(@selector(imageAsText))]) {
-        [self setNoteImage:self.imageAsText];
-    } */ else {
+    } else {
         NSLog(@"Unknown keypath triggered KVO method");
     }
 }
@@ -78,6 +70,7 @@
         __block NSData *imgAsData;
         __block UIImage *img;
         __weak typeof(self)wSelf = self;
+        //TODO: Determine if this should actually be done asynchronously or not
        // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             __strong typeof(wSelf)sSelf = wSelf;
             
@@ -106,7 +99,7 @@
     }
 }
 
-- (IBAction)tappedAccomplishedSwitch:(id)sender {//TODO: You should probably delay this so that the switch has time to move.  Make sure you disable user interaction. and prevent the switch, edit or selection to happen. Alternatively you just don't reload it immeadiately.  reload it after a slight delay.
+- (IBAction)tappedAccomplishedSwitch:(id)sender {
     NSLog(@"tapped Accomplished switch");
     if (self.delegate) {
         [self.delegate tableViewCell:self accomplishedPressed:sender];
@@ -125,7 +118,6 @@
             sSelf.date_created = date;
         });
     });
-    //_date_created = [self dateUTCStringToSystemTimeZone:date_created];
 }
 
 - (void)setDate_modified:(NSString *)date_modified adjustForLocalTime:(bool)isLocalTime {
@@ -139,7 +131,6 @@
             sSelf.date_modified = date;
         });
     });
-    //_date_modified = [self dateUTCStringToSystemTimeZone:date_modified];
 }
 
 - (NSString *)dateUTCStringToSystemTimeZone:(NSString *)utcStr {

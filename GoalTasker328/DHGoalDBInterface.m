@@ -98,12 +98,6 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
     [self makeQuery:query completed:cb];
 }
 
-//- (void)updateTaskWithID:(NSNumber *)id taskDescription:(NSString *)taskDescription image:(UIImage *)image complete:(void (^)(NSError *err, NSDictionary *obj))cb {
-//    NSData *imgAsData = UIImagePNGRepresentation(image);
-//    NSString *imgAsStr = [imgAsData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-//    [self updateTaskWithID:id taskDescription:taskDescription imageAsText:imgAsStr complete:cb];
-//}
-
 - (void)updateTaskWithID:(NSUInteger)id isAccomplished:(BOOL)accomplished complete:(void (^)(NSError *err, NSDictionary *obj))cb {
     [self makeQuery:[NSString stringWithFormat:
                      @"UPDATE goals SET "
@@ -112,27 +106,6 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                      " where id = %ld ", (int)accomplished, id]
           completed:cb];
 }
-
-//- (void)insertSomething:(NSDictionary *)obj complete:(void(^)(NSError *err, NSDictionary *obj))cb {
-//    NSString *query = [NSString stringWithFormat:
-//                       @"INSERT INTO goals ( "
-//                       " pid, "
-//                       " description, "
-//                       " date_created, "
-//                       " date_modified, "
-//                       " accomplished, "
-//                       " image, "
-//                       " image_orientation "
-//                       " ) values (%@, '%@',DATETIME('%@'),DATETIME('%@'),%@, '%@', %@);",
-//                       obj[@"pid"],
-//                       obj[@"description"],
-//                       obj[@"date_created"],
-//                       obj[@"date_modified"],
-//                       obj[@"accomplished"],
-//                       obj[@"image"],
-//                       obj[@"image_orientation"]];
-//    [self makeQuery:query completed:cb];
-//}
 
 - (void)insertNewEntryUnderPID:(NSUInteger)pid description:(NSString *)desc imagePath:(NSString *)imagePath imageOrientation:(NSUInteger)imgOrientation complete:(void(^)(NSError *err, NSDictionary *obj))cb {
     NSString *query = [NSString stringWithFormat:
@@ -156,31 +129,6 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
                        " WHERE id = %ld; ", id];
     [self makeQuery:query completed:cb];
 }
-
-//- (void)get_everything:(void(^)(NSError *err, NSDictionary *obj))cb
-//{
-//    NSString *query =
-//    @"SELECT * "
-//    " FROM goals "
-//    " ORDER BY date_created DESC; ";
-//    [self makeQuery:query completed:cb];
-//}
-
-//- (void)get_everything_from_parent:(int)pid complete:(void (^)(NSError *, NSDictionary *))cb {
-//    NSString *query = [NSString stringWithFormat:
-//                       @"SELECT id, "
-//                       "       pid, "
-//                       "       description, "
-//                       "       date_created, "
-//                       "       date_modified, "
-//                       "       accomplished, "
-//                       "       image "
-//                       " FROM goals "
-//                       " WHERE pid = %d "
-//                       " ORDER BY date_created DESC ",
-//                       pid];
-//    [self makeQuery:query completed:cb];
-//}
 
 - (void)getRowUnderParent:(NSUInteger)pid atRow:(NSUInteger)rowIndex complete:(void (^)(NSError *, NSDictionary *))cb {
     NSString *query = [NSString stringWithFormat:
