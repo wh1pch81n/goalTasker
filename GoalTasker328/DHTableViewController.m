@@ -97,55 +97,72 @@ typedef enum : NSUInteger {
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        //add code here for when you hit delete
         DHTableViewCell *cell = (id)[tableView cellForRowAtIndexPath:indexPath];
         if (cell) {
-            [[DHGoalDBInterface instance]
-             getRowWithId:cell.id.unsignedIntValue
-             complete:^(NSError *err, NSDictionary *obj) {
-                 if (err) {
-                     NSLog(@"Unable to find row with id");
-                     return;
-                 }
-                 NSDictionary *row = obj[@"rows"][0];
-                 
-                 //move image and thumb to volitile place
-                 NSString *imgPath = row[@"image"];
-                 if ([[NSFileManager defaultManager] fileExistsAtPath:imgPath]) {
-                     NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-                     
-                     NSString *newPath = [libCacheDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
-                     [[NSFileManager defaultManager] moveItemAtPath:imgPath
-                                                             toPath:newPath
-                                                              error:&err];
-                     if (err) {
-                         NSLog(@"Unable to move full image to volitile place");
-                         return;
-                     }
-                     imgPath = [imgPath stringByAppendingPathExtension:@"thumbnail"];
-                     newPath = [newPath stringByAppendingPathExtension:@"thumbnail"];
-                     [[NSFileManager defaultManager] moveItemAtPath:imgPath
-                                                             toPath:newPath
-                                                              error:&err];
-                     if (err) {
-                         NSLog(@"Unable to move thumb image to volitile place");
-                         return;
-                     }
-                 }
-             }];
-            
-            [[DHGoalDBInterface instance]
-             deleteRowThatHasId:cell.id.unsignedIntValue
-             complete:^(NSError *err, NSDictionary *obj) {
-                 if(err){
-                     NSLog(@"was not able to delete row");
-                     return;
-                 }
-                 //                 [tableView reloadData];
-                 [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-             }];
+            [self recursivelyDeleteStartingFromID:cell.id.unsignedIntValue];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
         }
     }
+}
+
+/**
+ moves the the full image and the thumbnail (associated with the id) to volitile memory
+ */
+- (void)deleteImagesAssociatedWithId:(NSUInteger)id {
+    [[DHGoalDBInterface instance]
+     getRowWithId:id complete:^(NSError *err, NSDictionary *obj) {
+         if (err) { NSLog(@"Unable to find row with id"); return;}
+         
+         NSDictionary *row = obj[@"rows"][0];
+         
+         //move image and thumb to volitile place
+         NSString *imgPath = row[@"image"];
+         if ([[NSFileManager defaultManager] fileExistsAtPath:imgPath]) {
+             NSString *libCacheDir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+             
+             NSString *newPath = [libCacheDir stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+             [[NSFileManager defaultManager] moveItemAtPath:imgPath
+                                                     toPath:newPath
+                                                      error:&err];
+             if (err) {
+                 NSLog(@"Unable to move full image to volitile place");
+                 return;
+             }
+             imgPath = [imgPath stringByAppendingPathExtension:@"thumbnail"];
+             newPath = [newPath stringByAppendingPathExtension:@"thumbnail"];
+             [[NSFileManager defaultManager] moveItemAtPath:imgPath
+                                                     toPath:newPath
+                                                      error:&err];
+             if (err) {
+                 NSLog(@"Unable to move thumb image to volitile place");
+                 return;
+             }
+         }
+     }];
+}
+
+/**
+ Starting from the given ID as a root of the tree it will recursively delete all the children
+ */
+- (void)recursivelyDeleteStartingFromID:(NSUInteger)id {
+    __weak typeof(self)wSelf = self;
+    [[DHGoalDBInterface instance] getAllRowIDsThatHaveParentId:id complete:^(NSError *err, NSDictionary *obj) {
+        if (err) {NSLog(@"Error trying to recursively delete"); return;}
+        __strong typeof(wSelf)sSelf = wSelf;
+        NSArray *rows = obj[@"rows"];
+        for (NSDictionary *row in rows) {
+            NSUInteger id = [[row objectForKey:@"id"] unsignedIntValue];
+            [sSelf recursivelyDeleteStartingFromID:id];
+        }
+    }];
+    
+    NSLog(@"id: %ld", id);
+    //Delete photos before deleting the row in the table.
+    [self deleteImagesAssociatedWithId:id];
+    [[DHGoalDBInterface instance]
+     deleteRowThatHasId:id complete:^(NSError *err, NSDictionary *obj) {
+         if(err){ NSLog(@"was not able to delete row"); return;}
+     }];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

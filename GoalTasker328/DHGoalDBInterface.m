@@ -207,6 +207,14 @@ static NSString *const kSqliteDatabaseName = @"goals.db";
     [self makeQuery:query completed:cb];
 }
 
+- (void)getAllRowIDsThatHaveParentId:(NSUInteger)pid complete:(void (^)(NSError *, NSDictionary *))cb {
+    NSString *query = [NSString stringWithFormat:
+                       @"SELECT id "
+                       " FROM goals "
+                       " WHERE pid = %ld ", pid];
+    [self makeQuery:query completed:cb];
+}
+
 - (void)totalNumberOfRowsWithCallBack:(void (^)(NSError *, NSDictionary *))cb {
     NSString *query = [NSString stringWithFormat:
                        @"SELECT count(id) as totalNumberOfRowsUnderParent  "

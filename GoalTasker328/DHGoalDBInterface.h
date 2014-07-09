@@ -53,6 +53,11 @@
 - (void)getRowUnderParent:(NSUInteger)pid atRow:(NSUInteger)rowIndex complete:(void (^)(NSError *err, NSDictionary *obj))cb;
 
 /**
+ get all rows with the given parent
+ */
+-(void)getAllRowIDsThatHaveParentId:(NSUInteger)pid complete:(void (^)(NSError *err, NSDictionary *obj))cb;
+
+/**
  returns the row associated with the given id
  */
 - (void)getRowWithId:(NSUInteger)id complete:(void (^)(NSError *err, NSDictionary *obj)) cb;
